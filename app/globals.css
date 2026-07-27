@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #FAF8F5;
+  color: #0F172A;
+  overflow-x: hidden;
+}
+
+/* Custom Cartoon Border and Shadow Utilities */
+.cartoon-card {
+  background-color: #ffffff;
+  border: 2px solid #0F172A;
+  border-radius: 1.25rem;
+  box-shadow: 3.5px 3.5px 0px 0px #0F172A;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cartoon-card-hover {
+  background-color: #ffffff;
+  border: 2px solid #0F172A;
+  border-radius: 1.25rem;
+  box-shadow: 3.5px 3.5px 0px 0px #0F172A;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cartoon-card-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #0F172A;
+}
+
+.cartoon-button-primary {
+  background-color: #2563EB;
+  color: #ffffff;
+  border: 2px solid #0F172A;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  box-shadow: 3px 3px 0px 0px #0F172A;
+  transition: all 0.15s ease-out;
+}
+
+.cartoon-button-primary:hover {
+  background-color: #1D4ED8;
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 5px 5px 0px 0px #0F172A;
+}
+
+.cartoon-button-primary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+}
+
+.cartoon-button-secondary {
+  background-color: #ffffff;
+  color: #0F172A;
+  border: 2px solid #0F172A;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  box-shadow: 3px 3px 0px 0px #0F172A;
+  transition: all 0.15s ease-out;
+}
+
+.cartoon-button-secondary:hover {
+  background-color: #F8FAFC;
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 5px 5px 0px 0px #0F172A;
+}
+
+.cartoon-button-secondary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+}
+
+.cartoon-button-accent {
+  background-color: #FACC15;
+  color: #0F172A;
+  border: 2px solid #0F172A;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  box-shadow: 3px 3px 0px 0px #0F172A;
+  transition: all 0.15s ease-out;
+}
+
+.cartoon-button-accent:hover {
+  background-color: #EAB308;
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 5px 5px 0px 0px #0F172A;
+}
+
+.cartoon-badge {
+  border: 1.5px solid #0F172A;
+  border-radius: 9999px;
+  font-weight: 700;
+  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+  border: 1.5px solid #0F172A;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
