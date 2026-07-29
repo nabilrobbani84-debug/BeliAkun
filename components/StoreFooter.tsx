@@ -14,8 +14,14 @@ export function StoreFooter({ onNavigateSection, onSelectCategory }: StoreFooter
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-blue-600 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0F172A] flex items-center justify-center text-white font-black text-xl">
-                B
+              <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0F172A] flex items-center justify-center text-white font-black text-xl">
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="10" r="4"/>
+                  <path d="M12 14v6m0-3h3"/>
+                </svg>
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 border border-slate-900 flex items-center justify-center text-[9px] shadow-[1px_1px_0px_0px_#000]">
+                  ✨
+                </span>
               </div>
               <span className="font-black text-2xl text-slate-900">
                 Beliakun<span className="text-blue-600">.com</span>

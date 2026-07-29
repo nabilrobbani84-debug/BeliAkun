@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: 'Beliakun.com - Akun Premium, Harga Lebih Santai',
   description:
     'Marketplace produk & akun digital premium terpercaya. ChatGPT Plus, Gemini Advanced, Claude Pro, Canva Pro, Netflix, Spotify, VPN Premium.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

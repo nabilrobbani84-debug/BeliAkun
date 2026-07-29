@@ -45,15 +45,22 @@ export function StoreHeader({
             onClick={() => onNavigateSection('hero')}
             className="cursor-pointer flex items-center gap-2.5 group shrink-0"
           >
-            <div className="w-10 h-10 rounded-2xl bg-blue-600 border-2 border-slate-900 shadow-[2.5px_2.5px_0px_0px_#0F172A] flex items-center justify-center text-white font-black text-xl group-hover:rotate-6 transition-transform">
-              B
+            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 border-2 border-slate-900 shadow-[2.5px_2.5px_0px_0px_#0F172A] flex items-center justify-center text-white font-black text-xl group-hover:rotate-6 transition-transform">
+              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="10" r="4"/>
+                <path d="M12 14v6m0-3h3"/>
+              </svg>
+              {/* Premium Verified Sparkle Badge */}
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 border border-slate-900 flex items-center justify-center text-[9px] shadow-[1px_1px_0px_0px_#000]">
+                ✨
+              </span>
             </div>
             <div className="flex flex-col">
-              <div className="flex items-center gap-1 font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900">
+              <div className="flex items-center gap-1 font-black text-xl sm:text-2xl tracking-tight text-slate-900">
                 Beliakun<span className="text-blue-600">.com</span>
-                <span className="inline-block w-2 h-2 rounded-full bg-amber-400 border border-slate-900 shadow-[1px_1px_0px_0px_#000]" />
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 border border-slate-900 shadow-[1px_1px_0px_0px_#000] animate-pulse" />
               </div>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider hidden sm:block">
+              <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider hidden sm:block">
                 Akun Digital Premium
               </span>
             </div>
