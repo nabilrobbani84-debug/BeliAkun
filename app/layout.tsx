@@ -36,6 +36,12 @@ export default function RootLayout({
                     enumerable: true
                   });
                 } catch(e) {}
+                
+                // Remove extension-injected attributes like bis_skin_checked before React hydration
+                document.addEventListener('DOMContentLoaded', function() {
+                  var els = document.querySelectorAll('[bis_skin_checked]');
+                  els.forEach(function(el) { el.removeAttribute('bis_skin_checked'); });
+                });
               })();
             `,
           }}
