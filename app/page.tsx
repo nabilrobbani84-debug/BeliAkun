@@ -282,9 +282,12 @@ export default function StorefrontPage() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onSuccessLogin={(name) => {
+        addToast={addToast}
+        onSuccessLogin={(name, isGoogleLogin, googleEmail) => {
           setUserName(name);
-          addToast('Halo Selamat Datang!', `Berhasil masuk sebagai ${name}.`);
+          if (!isGoogleLogin) {
+            addToast('Selamat Datang!', `Berhasil masuk sebagai ${name}`, 'success');
+          }
         }}
       />
 
