@@ -121,7 +121,8 @@ html.dark .cartoon-badge {
 
 /* Global Tailwind Overrides for Dark Mode Neo-brutalism */
 html.dark .bg-white, 
-html.dark .bg-\[\#FAF8F5\] {
+html.dark .bg-\[\#FAF8F5\],
+html.dark .bg-\[\#FAF8F5\]\/95 {
   background-color: #151D2A !important;
 }
 
