@@ -69,6 +69,122 @@ html.dark input::placeholder {
   color: #64748B !important;
 }
 
+/* Deep Dark Mode UI Components Override */
+html.dark .cartoon-card-hover {
+  background-color: #151D2A !important;
+  border-color: #334155 !important;
+  box-shadow: 3.5px 3.5px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-card-hover:hover {
+  box-shadow: 6px 6px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #334155 !important;
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-primary:hover {
+  background-color: #2563EB !important;
+  box-shadow: 5px 5px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-secondary {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-secondary:hover {
+  background-color: #334155 !important;
+  box-shadow: 5px 5px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-accent {
+  background-color: #EAB308 !important;
+  border-color: #334155 !important;
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-button-accent:hover {
+  background-color: #CA8A04 !important;
+  box-shadow: 5px 5px 0px 0px #000000 !important;
+}
+
+html.dark .cartoon-badge {
+  border-color: #334155 !important;
+  box-shadow: 1.5px 1.5px 0px 0px #000000 !important;
+}
+
+/* Global Tailwind Overrides for Dark Mode Neo-brutalism */
+html.dark .bg-white, 
+html.dark .bg-\[\#FAF8F5\] {
+  background-color: #151D2A !important;
+}
+
+html.dark .bg-slate-50, html.dark .bg-slate-100 {
+  background-color: #1E293B !important;
+}
+
+html.dark .bg-blue-50 {
+  background-color: #1E3A8A !important;
+  color: #DBEAFE !important;
+}
+
+html.dark .bg-amber-50 {
+  background-color: #422006 !important;
+  color: #FEF3C7 !important;
+}
+
+html.dark .bg-emerald-50 {
+  background-color: #022C22 !important;
+  color: #D1FAE5 !important;
+}
+
+html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 {
+  color: #F8FAFC !important;
+}
+
+html.dark .text-slate-600, html.dark .text-slate-500 {
+  color: #94A3B8 !important;
+}
+
+html.dark .border-slate-900 {
+  border-color: #334155 !important;
+}
+
+/* Fix shadows for dark mode */
+html.dark .shadow-\[8px_8px_0px_0px_\#0F172A\] {
+  box-shadow: 8px 8px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[6px_6px_0px_0px_\#0F172A\] {
+  box-shadow: 6px 6px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[4px_4px_0px_0px_\#0F172A\] {
+  box-shadow: 4px 4px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[3px_3px_0px_0px_\#0F172A\] {
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[2px_2px_0px_0px_\#0F172A\] {
+  box-shadow: 2px 2px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[1\.5px_1\.5px_0px_0px_\#0F172A\] {
+  box-shadow: 1.5px 1.5px 0px 0px #000000 !important;
+}
+
+html.dark .shadow-\[1px_1px_0px_0px_\#0F172A\] {
+  box-shadow: 1px 1px 0px 0px #000000 !important;
+}
+
 .cartoon-card-hover {
   background-color: #ffffff;
   border: 2px solid #0F172A;
