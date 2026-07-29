@@ -77,7 +77,7 @@ export default function StorefrontPage() {
   // Toast Helpers
   const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
     const newToast: ToastMessage = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + '-' + Math.random().toString(36).substring(2, 9),
       type,
       title,
       message,
