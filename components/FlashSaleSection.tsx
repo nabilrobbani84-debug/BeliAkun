@@ -82,7 +82,7 @@ export function FlashSaleSection({
         </div>
 
         {/* Product Cards for Flash Sale */}
-        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mb-6">
           {flashSaleItems.map((item) => {
             const pkg =
               item.packages.find((p) => p.id === item.defaultPackageId) || item.packages[0];
