@@ -35,7 +35,14 @@ export function CheckoutModal({
 
   const handleNextToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !whatsappNumber) return;
+    const cleanName = customerName.trim().replace(/[<>]/g, '');
+    const cleanPhone = whatsappNumber.replace(/[^0-9+]/g, '');
+
+    if (!cleanName || cleanName.length < 2) return;
+    if (!cleanPhone || cleanPhone.length < 9) return;
+
+    setCustomerName(cleanName);
+    setWhatsappNumber(cleanPhone);
     setStep('payment');
   };
 
