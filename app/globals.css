@@ -6,13 +6,19 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --bg-main: #FAF8F5;
   --text-main: #0F172A;
+  --text-muted: #475569;
   --card-bg: #FFFFFF;
+  --header-bg: #FAF8F5;
+  --border-color: #0F172A;
 }
 
 html.dark {
-  --bg-main: #0F172A;
-  --text-main: #F8FAFC;
-  --card-bg: #1E293B;
+  --bg-main: #0B0F19;
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --card-bg: #151D2A;
+  --header-bg: #0B0F19;
+  --border-color: #334155;
   color-scheme: dark;
 }
 
@@ -25,22 +31,42 @@ body {
 }
 
 html.dark body {
-  background-color: #0F172A;
-  color: #F8FAFC;
+  background-color: #0B0F19;
+  color: #F1F5F9;
 }
 
 /* Custom Cartoon Border and Shadow Utilities */
 .cartoon-card {
   background-color: var(--card-bg);
-  border: 2px solid #0F172A;
+  border: 2px solid var(--border-color);
   border-radius: 1.25rem;
-  box-shadow: 3.5px 3.5px 0px 0px #0F172A;
+  box-shadow: 3.5px 3.5px 0px 0px var(--border-color);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.dark .cartoon-card {
   border-color: #334155;
   box-shadow: 3.5px 3.5px 0px 0px #000000;
+  background-color: #151D2A;
+}
+
+/* Smooth Dark Mode Adjustments for Text and Inputs */
+html.dark h1, html.dark h2, html.dark h3, html.dark h4 {
+  color: #F8FAFC !important;
+}
+
+html.dark p:not([class*="text-white"]):not([class*="text-amber"]):not([class*="text-emerald"]):not([class*="text-blue"]):not([class*="text-rose"]) {
+  color: #94A3B8;
+}
+
+html.dark input, html.dark select, html.dark textarea {
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+html.dark input::placeholder {
+  color: #64748B !important;
 }
 
 .cartoon-card-hover {

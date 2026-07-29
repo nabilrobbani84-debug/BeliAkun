@@ -37,10 +37,10 @@ export function StoreHeader({
   return (
     <>
       <header
-        className={`sticky top-0 z-30 transition-all duration-200 border-b-2 border-slate-900 ${
+        className={`sticky top-0 z-30 transition-all duration-200 border-b-2 border-slate-900 dark:border-slate-800 ${
           isScrolled
-            ? 'bg-[#FAF8F5]/95 backdrop-blur-md py-2.5 shadow-md'
-            : 'bg-[#FAF8F5] py-3.5'
+            ? 'bg-[#FAF8F5]/95 dark:bg-[#0B0F19]/95 backdrop-blur-md py-2.5 shadow-md'
+            : 'bg-[#FAF8F5] dark:bg-[#0B0F19] py-3.5'
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
@@ -71,34 +71,34 @@ export function StoreHeader({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 font-extrabold text-xs tracking-wide text-slate-800">
+          <nav className="hidden lg:flex items-center gap-1 font-extrabold text-xs tracking-wide text-slate-800 dark:text-slate-200">
             <button
               onClick={() => onNavigateSection('hero')}
-              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 transition-colors"
+              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
             >
               Beranda
             </button>
             <button
               onClick={() => onNavigateSection('products')}
-              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 transition-colors"
+              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
             >
               Semua Produk
             </button>
             <button
               onClick={() => onNavigateSection('categories')}
-              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 transition-colors"
+              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
             >
               Kategori
             </button>
             <button
               onClick={() => onNavigateSection('how-it-works')}
-              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 transition-colors"
+              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
             >
               Cara Belanja
             </button>
             <button
               onClick={() => onNavigateSection('faq')}
-              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 transition-colors"
+              className="px-3 py-1.5 rounded-xl hover:bg-slate-200/80 dark:hover:bg-slate-800 transition-colors"
             >
               FAQ
             </button>
