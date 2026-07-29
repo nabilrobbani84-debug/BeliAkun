@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ShoppingBag, User, Menu, Sparkles, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, User, Menu, Sparkles, ChevronDown, Sun, Moon } from 'lucide-react';
 import { MobileNavigation } from '@/components/MobileNavigation';
 
 interface StoreHeaderProps {
@@ -9,6 +9,8 @@ interface StoreHeaderProps {
   onOpenAuth: () => void;
   userName?: string;
   onNavigateSection: (sectionId: string) => void;
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
 }
 
 export function StoreHeader({
@@ -18,6 +20,8 @@ export function StoreHeader({
   onOpenAuth,
   userName,
   onNavigateSection,
+  isDarkMode = false,
+  onToggleTheme,
 }: StoreHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -114,6 +118,16 @@ export function StoreHeader({
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Theme Dark/Light Toggle Button */}
+            <button
+              onClick={onToggleTheme}
+              className="p-2 rounded-xl border-2 border-slate-900 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-900 dark:text-amber-300 shadow-[2px_2px_0px_0px_#0F172A] dark:shadow-[2px_2px_0px_0px_#000] transition-all"
+              title={isDarkMode ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
+              aria-label="Toggle tema gelap atau terang"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-slate-900" />}
+            </button>
+
             {/* Mobile Search Button */}
             <button
               onClick={onOpenSearch}

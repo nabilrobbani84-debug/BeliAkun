@@ -4,22 +4,43 @@
 
 :root {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --bg-main: #FAF8F5;
+  --text-main: #0F172A;
+  --card-bg: #FFFFFF;
+}
+
+html.dark {
+  --bg-main: #0F172A;
+  --text-main: #F8FAFC;
+  --card-bg: #1E293B;
+  color-scheme: dark;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #FAF8F5;
-  color: #0F172A;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
 }
 
 /* Custom Cartoon Border and Shadow Utilities */
 .cartoon-card {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   border: 2px solid #0F172A;
   border-radius: 1.25rem;
   box-shadow: 3.5px 3.5px 0px 0px #0F172A;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark .cartoon-card {
+  border-color: #334155;
+  box-shadow: 3.5px 3.5px 0px 0px #000000;
 }
 
 .cartoon-card-hover {

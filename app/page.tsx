@@ -44,6 +44,35 @@ export default function StorefrontPage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [userName, setUserName] = useState<string>('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        addToast('Mode Gelap Berhasil Aktif 🌙', 'Tampilan beralih ke tema gelap untuk kenyamanan mata.');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        addToast('Mode Terang Berhasil Aktif ☀️', 'Tampilan beralih ke tema terang.');
+      }
+      return next;
+    });
+  };
 
   // Toast Helpers
   const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -165,6 +194,8 @@ export default function StorefrontPage() {
         onOpenAuth={() => setIsAuthOpen(true)}
         userName={userName}
         onNavigateSection={handleNavigateSection}
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Storefront Body Content */}
