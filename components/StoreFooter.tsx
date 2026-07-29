@@ -9,7 +9,7 @@ interface StoreFooterProps {
 export function StoreFooter({ onNavigateSection, onSelectCategory }: StoreFooterProps) {
   return (
     <footer className="w-full bg-white border-t-4 border-slate-900 mt-12 pt-12 pb-8 text-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b-2 border-slate-200">
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">

@@ -12,7 +12,7 @@ export function NewsletterCTA() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8">
       <div className="cartoon-card p-6 sm:p-10 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 border-4 border-slate-900 shadow-[8px_8px_0px_0px_#0F172A] text-white relative overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center relative z-10">
           <div className="md:col-span-7 space-y-2">

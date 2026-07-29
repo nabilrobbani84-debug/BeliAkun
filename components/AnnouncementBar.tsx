@@ -12,7 +12,7 @@ export function AnnouncementBar({ onPromoClick }: AnnouncementBarProps) {
 
   return (
     <div className="bg-amber-300 text-slate-900 border-b-2 border-slate-900 px-4 py-2 font-semibold text-xs sm:text-sm relative z-40 transition-all">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 mx-auto sm:mx-0 overflow-hidden">
           <span className="inline-flex items-center gap-1.5 bg-slate-900 text-amber-300 px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wide border border-slate-900 shrink-0">
             <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" /> PROMO

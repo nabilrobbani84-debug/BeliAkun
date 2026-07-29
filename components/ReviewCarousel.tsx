@@ -10,7 +10,7 @@ export function ReviewCarousel() {
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-rose-700 bg-rose-100 px-3 py-1 rounded-full border border-rose-300">

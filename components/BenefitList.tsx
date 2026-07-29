@@ -18,7 +18,7 @@ export function BenefitList() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-2">
+    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {BENEFITS.map((item) => (
           <div

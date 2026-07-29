@@ -39,7 +39,7 @@ export function StoreHeader({
             : 'bg-[#FAF8F5] py-3.5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           {/* Logo Brand Beliakun.com */}
           <div
             onClick={() => onNavigateSection('hero')}

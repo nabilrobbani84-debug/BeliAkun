@@ -19,7 +19,7 @@ export function ProductGrid({
   subtitle = 'Pilihan akun digital favorit pengguna Beliakun.com dengan garansi resmi dan proses kilat.',
 }: ProductGridProps) {
   return (
-    <section id="products" className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <section id="products" className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
@@ -36,7 +36,7 @@ export function ProductGrid({
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-5">
         {products.map((product) => (
           <ProductCard
             key={product.id}

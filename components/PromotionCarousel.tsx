@@ -35,7 +35,7 @@ export function PromotionCarousel({ onCtaClick }: PromotionCarouselProps) {
   }, [emblaApi, onSelect]);
 
   return (
-    <section id="hero" className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-8">
+    <section id="hero" className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 pt-4 pb-8">
       <div className="relative group">
         {/* Carousel Container */}
         <div className="overflow-hidden rounded-3xl border-4 border-slate-900 shadow-[6px_6px_0px_0px_#0F172A] bg-blue-600" ref={emblaRef}>

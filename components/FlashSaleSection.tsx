@@ -33,7 +33,7 @@ export function FlashSaleSection({
   const flashSaleItems = products.slice(0, 4);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8">
       <div className="cartoon-card p-6 sm:p-8 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-300 border-4 border-slate-900 shadow-[8px_8px_0px_0px_#0F172A] relative overflow-hidden">
         {/* Decorative Background Badges */}
         <div className="absolute top-3 right-3 text-7xl opacity-20 pointer-events-none select-none">
@@ -82,7 +82,7 @@ export function FlashSaleSection({
         </div>
 
         {/* Product Cards for Flash Sale */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mb-6">
           {flashSaleItems.map((item) => {
             const pkg =
               item.packages.find((p) => p.id === item.defaultPackageId) || item.packages[0];

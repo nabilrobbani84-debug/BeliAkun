@@ -34,7 +34,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <section id="how-it-works" className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-10">
       <div className="cartoon-card p-6 sm:p-10 bg-white border-4 border-slate-900 shadow-[8px_8px_0px_0px_#0F172A]">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
