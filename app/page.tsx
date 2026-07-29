@@ -151,7 +151,7 @@ export default function StorefrontPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-slate-900 font-sans">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-slate-900 font-sans" suppressHydrationWarning>
       {/* 1. Announcement Bar */}
       <AnnouncementBar
         onPromoClick={() => handleNavigateSection('products')}
