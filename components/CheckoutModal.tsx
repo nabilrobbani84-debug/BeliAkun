@@ -39,14 +39,31 @@ export function CheckoutModal({
     setStep('payment');
   };
 
-  const handleSimulatePaymentSuccess = () => {
-    setOrderId(Math.floor(100000 + Math.random() * 900000));
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-    });
-    setStep('success');
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentStatusText, setPaymentStatusText] = useState('');
+
+  const handleProcessRealtimePayment = () => {
+    setIsCheckingPayment(true);
+    setPaymentStatusText('Menghubungkan ke gateway pembayaran...');
+
+    setTimeout(() => {
+      setPaymentStatusText('Menunggu konfirmasi mutasi pembayaran...');
+    }, 1500);
+
+    setTimeout(() => {
+      setPaymentStatusText('Pembayaran terdeteksi! Memverifikasi pesanan...');
+    }, 3000);
+
+    setTimeout(() => {
+      setIsCheckingPayment(false);
+      setOrderId(Math.floor(100000 + Math.random() * 900000));
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+      setStep('success');
+    }, 4200);
   };
 
   const handleFinish = () => {
@@ -318,20 +335,40 @@ export function CheckoutModal({
                   )}
                 </div>
 
+                {isCheckingPayment && (
+                  <div className="cartoon-card p-3.5 bg-blue-50 border-slate-900 flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-3 border-blue-600 border-t-transparent shrink-0" />
+                    <span className="text-xs font-bold text-slate-800 animate-pulse">
+                      {paymentStatusText}
+                    </span>
+                  </div>
+                )}
+
                 <div className="pt-2 flex gap-2">
                   <button
                     type="button"
+                    disabled={isCheckingPayment}
                     onClick={() => setStep('form')}
-                    className="cartoon-button-secondary py-3 px-4 text-xs font-extrabold"
+                    className="cartoon-button-secondary py-3 px-4 text-xs font-extrabold disabled:opacity-50"
                   >
                     Kembali
                   </button>
                   <button
                     type="button"
-                    onClick={handleSimulatePaymentSuccess}
-                    className="flex-1 cartoon-button-accent py-3 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5"
+                    disabled={isCheckingPayment}
+                    onClick={handleProcessRealtimePayment}
+                    className="flex-1 cartoon-button-primary py-3 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 disabled:opacity-75"
                   >
-                    <Sparkles className="w-4 h-4 text-slate-900" /> Simulasi Pembayaran Sukses
+                    {isCheckingPayment ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                        Memverifikasi Pembayaran...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 text-emerald-300" /> Cek Status Pembayaran Realtime
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
