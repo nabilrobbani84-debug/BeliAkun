@@ -40,11 +40,37 @@ export default function RootLayout({
                   });
                 } catch(e) {}
                 
-                // Remove extension-injected attributes like bis_skin_checked before React hydration
-                document.addEventListener('DOMContentLoaded', function() {
-                  var els = document.querySelectorAll('[bis_skin_checked]');
-                  els.forEach(function(el) { el.removeAttribute('bis_skin_checked'); });
-                });
+                // Aggressively remove extension-injected attributes like bis_skin_checked before React hydration
+                (function() {
+                  try {
+                    var observer = new MutationObserver(function(mutations) {
+                      mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'bis_skin_checked') {
+                          m.target.removeAttribute('bis_skin_checked');
+                        }
+                        if (m.type === 'childList') {
+                          m.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) {
+                              if (node.hasAttribute('bis_skin_checked')) {
+                                node.removeAttribute('bis_skin_checked');
+                              }
+                              var children = node.querySelectorAll('[bis_skin_checked]');
+                              for (var i = 0; i < children.length; i++) {
+                                children[i].removeAttribute('bis_skin_checked');
+                              }
+                            }
+                          });
+                        }
+                      });
+                    });
+                    observer.observe(document.documentElement, { 
+                      attributes: true, 
+                      attributeFilter: ['bis_skin_checked'],
+                      childList: true, 
+                      subtree: true 
+                    });
+                  } catch(e) {}
+                })();
               })();
             `,
           }}
