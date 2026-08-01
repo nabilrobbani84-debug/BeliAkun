@@ -95,5 +95,5 @@ export function DialogContent({ className, children }: { className?: string; chi
 }
 
 export function DialogFooter({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn("p-4 sm:p-5 bg-[var(--card)] border-t-2 border-[var(--border)] flex flex-col sm:flex-row items-center justify-end gap-2.5 pb-safe", className)}>{children}</div>
+  return <div className={cn("p-4 sm:p-5 bg-[var(--card)] border-t-2 border-[var(--border)] flex flex-row items-center justify-between gap-3 sm:gap-4", className)}>{children}</div>
 }
