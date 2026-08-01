@@ -1,239 +1,80 @@
-'use client';
+import { Storefront } from '@/components/Storefront';
+import { getActiveCategories, getActiveProducts } from '@/lib/data/catalog';
+import { Product, Category, ProductPackage } from '@/types/store';
+import { Category as DbCategory, ProductWithVariants } from '@/lib/supabase/types';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { AnnouncementBar } from '@/components/AnnouncementBar';
-import { StoreHeader } from '@/components/StoreHeader';
-import { PromotionCarousel } from '@/components/storefront/promotion-carousel';
-import { ProductCategorySection } from '@/components/storefront/product-category-section';
-import { AllProductsSection } from '@/components/storefront/all-products-section';
-import { TrustSection } from '@/components/storefront/trust-section';
-import { HomepageCTA } from '@/components/storefront/homepage-cta';
-import { StoreFooter } from '@/components/StoreFooter';
+function mapCategory(dbCat: DbCategory): Category {
+  return {
+    id: dbCat.id,
+    name: dbCat.name,
+    slug: dbCat.slug,
+    icon: dbCat.icon_key || 'Sparkles',
+    count: 0, // Would need aggregate query, keep 0 for now
+    bgColor: 'bg-blue-100', // Hardcoded for step 1
+    badgeBg: 'bg-blue-300 text-blue-900',
+    description: dbCat.description || '',
+  };
+}
 
-import { QuickViewModal } from '@/components/QuickViewModal';
-import { CheckoutModal } from '@/components/CheckoutModal';
-import { SearchDialog } from '@/components/SearchDialog';
-import { AuthModal } from '@/components/AuthModal';
-import { ToastContainer, ToastMessage } from '@/components/ToastNotification';
-import { PRODUCTS } from '@/data/mockData';
-import { Product, ProductPackage } from '@/types/store';
+function mapProduct(dbProd: ProductWithVariants): Product {
+  const packages: ProductPackage[] = dbProd.variants.map((v) => ({
+    id: v.id,
+    name: v.name,
+    duration: v.duration_label || 'Custom',
+    price: v.price,
+    originalPrice: v.compare_at_price || undefined,
+    discountPercent: v.compare_at_price && v.compare_at_price > v.price
+      ? Math.round(((v.compare_at_price - v.price) / v.compare_at_price) * 100)
+      : 0,
+    isPopular: v.package_label === 'Paling Populer',
+    type: (v.account_type === 'sharing' ? 'Shared' : 'Private') as any,
+    description: v.package_label || '',
+  }));
 
-const emptySubscribe = () => () => {};
+  const defaultPackageId = packages.length > 0 ? packages[0].id : '';
+  const inStock = dbProd.variants.some((v) => v.status === 'active');
 
-export default function StorefrontPage() {
-  const isHydrated = React.useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+  const tags: any[] = [];
+  if (dbProd.badge === 'bestseller') tags.push('Terlaris');
+  if (dbProd.badge === 'new') tags.push('Baru');
+  if (dbProd.badge === 'saving') tags.push('Promo');
+  if (dbProd.badge === 'limited_stock') tags.push('Stok Terbatas');
 
-  // State Management
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [checkoutProduct, setCheckoutProduct] = useState<Product | null>(null);
-  const [checkoutPackage, setCheckoutPackage] = useState<ProductPackage | null>(null);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
-  const [userName, setUserName] = useState<string>('');
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  return {
+    id: dbProd.id,
+    name: dbProd.name,
+    slug: dbProd.slug,
+    category: dbProd.category_id, // Map correctly later if needed
+    categoryId: dbProd.category_id,
+    description: dbProd.short_description || '',
+    fullDescription: dbProd.description || '',
+    logoBg: 'bg-slate-100', // Default
+    logoColor: 'text-slate-900', // Default
+    iconName: 'Box',
+    rating: 5.0, // Default mock
+    reviewCount: 0, // Default mock
+    salesCount: 0, // Default mock
+    tags: tags as any,
+    inStock,
+    packages,
+    defaultPackageId,
+    features: dbProd.features || [],
+    instantDelivery: dbProd.delivery_method === 'instant',
+    guaranteeDays: dbProd.warranty_duration || undefined,
+  };
+}
 
-  // Theme state — only used by the toggle icon, CSS variables handle the rest
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // SSR-safe initial value — actual value set in useEffect
-    return false;
-  });
+export default async function Page() {
+  const [dbCategories, dbProducts] = await Promise.all([
+    getActiveCategories(),
+    getActiveProducts(),
+  ]);
 
-  // Sync isDarkMode state with actual DOM class (set by layout.tsx inline script)
-  useEffect(() => {
-    setIsDarkMode(document.documentElement.classList.contains('dark'));
-  }, []);
+  const categories = dbCategories.map(mapCategory);
+  const products = dbProducts.map(mapProduct);
 
-  // Toast Helpers
-  const addToast = useCallback((title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    const newToast: ToastMessage = {
-      id: Date.now().toString() + '-' + Math.random().toString(36).substring(2, 9),
-      type,
-      title,
-      message,
-    };
-    setToasts((prev) => [...prev, newToast]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== newToast.id));
-    }, 3500);
-  }, []);
-
-  const handleDismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
-  // Theme Toggle — instant DOM mutation, no CSS transitions during change
-  const handleToggleTheme = useCallback(() => {
-    const html = document.documentElement;
-    const goingDark = !html.classList.contains('dark');
-
-    // Instant theme switch via DOM — no React re-render cascade needed for color change
-    if (goingDark) {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-
-    // Only update state for icon display
-    setIsDarkMode(goingDark);
-  }, []);
-
-  // Open Auth Modal with mode ('login' | 'register')
-  const handleOpenAuth = useCallback((mode: 'login' | 'register' = 'login') => {
-    setAuthMode(mode);
-    setIsAuthOpen(true);
-  }, []);
-
-  // Direct Buy Handler (Opens Checkout directly)
-  const handleDirectBuy = useCallback((product: Product, pkg: ProductPackage) => {
-    setCheckoutProduct(product);
-    setCheckoutPackage(pkg);
-    setIsCheckoutOpen(true);
-  }, []);
-
-  const handleSuccessOrder = useCallback(() => {
-    setIsCheckoutOpen(false);
-    addToast('Pembayaran Sukses!', 'Detail akun sedang dikirimkan via WhatsApp.', 'success');
-  }, [addToast]);
-
-  // Smooth Scroll Navigation Helper
-  const handleNavigateSection = useCallback((sectionId: string) => {
-    if (sectionId === 'hero') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
-
-  // Filtered Products for All Products Section
-  const filteredProducts = useMemo(() => {
-    if (selectedCategoryId === 'all') return PRODUCTS;
-    return PRODUCTS.filter((p) => p.categoryId === selectedCategoryId || p.tags.some(t => t.toLowerCase() === selectedCategoryId));
-  }, [selectedCategoryId]);
-
-  if (!isHydrated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]" suppressHydrationWarning>
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans" suppressHydrationWarning>
-      {/* 1. Header Section */}
-      <AnnouncementBar
-        onPromoClick={() => handleNavigateSection('products')}
-      />
-      <StoreHeader
-        onOpenAuth={handleOpenAuth}
-        userName={userName}
-        onNavigateSection={handleNavigateSection}
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleToggleTheme}
-      />
-
-      {/* Main Storefront Body Content */}
-      <main className="flex-1">
-        {/* 2. Hero Section: Promotion Banner Image Slider */}
-        <PromotionCarousel
-          onCtaClick={(target) => {
-            if (target === 'ai') {
-              setSelectedCategoryId('ai');
-              handleNavigateSection('products');
-            } else {
-              handleNavigateSection('products');
-            }
-          }}
-        />
-
-        {/* 3. Kategori Produk */}
-        <ProductCategorySection
-          selectedCategoryId={selectedCategoryId}
-          onSelectCategory={(catId) => {
-            setSelectedCategoryId(catId);
-            handleNavigateSection('products');
-          }}
-        />
-
-        {/* 4. Semua Produk */}
-        <AllProductsSection
-          products={filteredProducts}
-          selectedCategoryId={selectedCategoryId}
-          onResetCategory={() => setSelectedCategoryId('all')}
-          onQuickView={(prod) => setQuickViewProduct(prod)}
-          onDirectBuy={handleDirectBuy}
-        />
-
-        {/* 5. Section Kepercayaan */}
-        <TrustSection />
-
-        {/* 6. CTA Section */}
-        <HomepageCTA
-          onExploreProducts={() => handleNavigateSection('products')}
-        />
-      </main>
-
-      {/* 7. Footer Section */}
-      <StoreFooter
-        onNavigateSection={handleNavigateSection}
-        onSelectCategory={(catId) => {
-          setSelectedCategoryId(catId);
-          handleNavigateSection('products');
-        }}
-      />
-
-      {/* Interactive Modals */}
-      <QuickViewModal
-        product={quickViewProduct}
-        isOpen={!!quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onDirectBuy={handleDirectBuy}
-      />
-
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        product={checkoutProduct}
-        selectedPackage={checkoutPackage}
-        onSuccessOrder={handleSuccessOrder}
-      />
-
-      <SearchDialog
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        products={PRODUCTS}
-        onSelectProduct={(prod) => setQuickViewProduct(prod)}
-      />
-
-      <AuthModal
-        isOpen={isAuthOpen}
-        initialMode={authMode}
-        onClose={() => setIsAuthOpen(false)}
-        addToast={addToast}
-        onSuccessLogin={(name, isGoogleLogin, googleEmail) => {
-          setUserName(name);
-          if (!isGoogleLogin) {
-            addToast('Selamat Datang!', `Berhasil masuk sebagai ${name}`, 'success');
-          }
-        }}
-      />
-
-      <ToastContainer
-        toasts={toasts}
-        onDismiss={handleDismissToast}
-      />
-    </div>
-  );
+  // If Supabase is empty or down, maybe fallback to empty state,
+  // but Storefront handles empty state gracefully via ProductGrid.
+  
+  return <Storefront initialCategories={categories} initialProducts={products} />;
 }

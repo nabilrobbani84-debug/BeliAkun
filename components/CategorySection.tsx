@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORIES } from '@/data/mockData';
+import { Category } from '@/types/store';
 import { CategoryCard } from '@/components/CategoryCard';
 import { PageContainer, SectionContainer } from '@/components/patterns/page-container';
 import { SectionHeading } from '@/components/patterns/section-heading';
@@ -8,11 +8,13 @@ import { ResponsiveGrid } from '@/components/patterns/responsive-grid';
 interface CategorySectionProps {
   selectedCategoryId: string;
   onSelectCategory: (categoryId: string) => void;
+  categories: Category[];
 }
 
 export function CategorySection({
   selectedCategoryId,
   onSelectCategory,
+  categories,
 }: CategorySectionProps) {
   const allCategory = {
     id: 'all',
@@ -38,11 +40,11 @@ export function CategorySection({
         {/* Grid Categories */}
         <ResponsiveGrid variant="category">
           <CategoryCard
-            category={allCategory}
+            category={allCategory as any}
             isSelected={selectedCategoryId === 'all'}
             onSelect={onSelectCategory}
           />
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <CategoryCard
               key={cat.id}
               category={cat}
