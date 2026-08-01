@@ -1,5 +1,9 @@
 import React from 'react';
-import { ShieldCheck, Lock, Headphones, CreditCard, Sparkles, Star, Users, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Lock, Headphones, CreditCard, Sparkles, Star, Users } from 'lucide-react';
+import { PageContainer, SectionContainer } from '@/components/patterns/page-container';
+import { SectionHeading } from '@/components/patterns/section-heading';
+import { ResponsiveGrid } from '@/components/patterns/responsive-grid';
+import { Card } from '@/components/ui/card';
 
 export function TrustSection() {
   const stats = [
@@ -10,78 +14,75 @@ export function TrustSection() {
   ];
 
   return (
-    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8">
-      {/* Stats Counter Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        {stats.map((stat, idx) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={idx}
-              className="cartoon-card p-4 bg-white border-slate-900 flex items-center gap-3.5"
-            >
-              <div className={`p-3 rounded-2xl ${stat.color} text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0F172A] shrink-0`}>
-                <Icon className="w-5 h-5" />
+    <SectionContainer className="py-6 sm:py-8 md:py-10">
+      <PageContainer>
+        {/* Stats Counter Bar */}
+        <ResponsiveGrid variant="stat" className="mb-6 sm:mb-8">
+          {stats.map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <Card
+                key={idx}
+                className="p-3.5 sm:p-4 bg-[var(--card)] border-[var(--border)] flex items-center gap-2.5 sm:gap-3.5"
+              >
+                <div className={`p-2.5 sm:p-3 rounded-2xl ${stat.color} text-slate-950 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] shrink-0`}>
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-black text-base sm:text-lg md:text-xl text-[var(--foreground)] block leading-none truncate">
+                    {stat.value}
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] font-extrabold text-[var(--muted-foreground)] uppercase tracking-wide block mt-1 truncate">
+                    {stat.label}
+                  </span>
+                </div>
+              </Card>
+            );
+          })}
+        </ResponsiveGrid>
+
+        {/* Trust Details Container */}
+        <Card className="p-5 sm:p-8 bg-blue-50/70 dark:bg-blue-950/30 border-[var(--border)]">
+          <SectionHeading
+            badge="DIJAMIN TERPERCAYA"
+            title="Mengapa Pilih Beliakun.com?"
+            subtitle="Kenyamanan dan keamanan transaksimu adalah prioritas utama kami."
+            align="center"
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            <Card className="p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] space-y-2">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#000] shrink-0">
+                <ShieldCheck className="w-5 h-5" />
               </div>
-              <div>
-                <span className="font-black text-lg sm:text-xl text-slate-900 block leading-none">
-                  {stat.value}
-                </span>
-                <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wide block mt-1">
-                  {stat.label}
-                </span>
+              <h3 className="font-extrabold text-sm sm:text-base text-[var(--foreground)]">Garansi Penuh Sesuai Produk</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium leading-relaxed">
+                Jika terjadi kendala pada masa aktif langganan, kami siap membantu perbaikan atau penggantian akun baru tanpa biaya tambahan.
+              </p>
+            </Card>
+
+            <Card className="p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] space-y-2">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#000] shrink-0">
+                <Lock className="w-5 h-5" />
               </div>
-            </div>
-          );
-        })}
-      </div>
+              <h3 className="font-extrabold text-sm sm:text-base text-[var(--foreground)]">Harga Transparan & Jelas</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium leading-relaxed">
+                Tidak ada biaya tersembunyi. Semua fitur, tipe paket (Shared/Private/Invite), dan durasi dijelaskan secara terbuka sebelum membeli.
+              </p>
+            </Card>
 
-      {/* Trust Details Container */}
-      <div className="cartoon-card p-6 sm:p-8 bg-blue-50/70 border-slate-900">
-        <div className="text-center max-w-xl mx-auto mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wide text-blue-800 bg-blue-200 px-3 py-1 rounded-full border border-blue-400">
-            <ShieldCheck className="w-3.5 h-3.5" /> DIJAMIN TERPERCAYA
-          </span>
-          <h2 className="font-black text-2xl sm:text-3xl text-slate-900 mt-2">
-            Mengapa Pilih Beliakun.com?
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-semibold mt-1">
-            Kenyamanan dan keamanan transaksimu adalah prioritas utama kami.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="cartoon-card p-5 bg-white border-slate-900 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#0F172A]">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">Garansi Penuh Sesuai Produk</h3>
-            <p className="text-xs text-slate-600 font-medium leading-relaxed">
-              Jika terjadi kendala pada masa aktif langganan, kami siap membantu perbaikan atau penggantian akun baru tanpa biaya tambahan.
-            </p>
+            <Card className="p-4 sm:p-5 bg-[var(--card)] border-[var(--border)] space-y-2">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#000] shrink-0">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <h3 className="font-extrabold text-sm sm:text-base text-[var(--foreground)]">Dukungan QRIS & E-Wallet</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium leading-relaxed">
+                Bayar serba mudah dari GoPay, OVO, Dana, ShopeePay hingga M-Banking favoritmu dengan konfirmasi otomatis cepat.
+              </p>
+            </Card>
           </div>
-
-          <div className="cartoon-card p-5 bg-white border-slate-900 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#0F172A]">
-              <Lock className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">Harga Transparan & Jelas</h3>
-            <p className="text-xs text-slate-600 font-medium leading-relaxed">
-              Tidak ada biaya tersembunyi. Semua fitur, tipe paket (Shared/Private/Invite), dan durasi dijelaskan secara terbuka sebelum membeli.
-            </p>
-          </div>
-
-          <div className="cartoon-card p-5 bg-white border-slate-900 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-purple-400 border-2 border-slate-900 flex items-center justify-center text-slate-950 font-black shadow-[2px_2px_0px_0px_#0F172A]">
-              <CreditCard className="w-5 h-5" />
-            </div>
-            <h3 className="font-extrabold text-base text-slate-900">Dukungan QRIS & E-Wallet</h3>
-            <p className="text-xs text-slate-600 font-medium leading-relaxed">
-              Bayar serba mudah dari GoPay, OVO, Dana, ShopeePay hingga M-Banking favoritmu dengan konfirmasi otomatis cepat.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+        </Card>
+      </PageContainer>
+    </SectionContainer>
   );
 }

@@ -3,7 +3,7 @@ import React from 'react';
 export function CartoonAiHeroIllustration({ className = '' }: { className?: string }) {
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
-      <svg className="w-full max-w-[320px] sm:max-w-[380px] h-auto drop-shadow-[4px_4px_0px_#0F172A]" viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full max-w-[320px] sm:max-w-[380px] h-auto drop-shadow-[4px_4px_0px_rgba(15,23,42,0.8)]" viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
         {/* Background Decorative Cloud/Shape */}
         <path d="M40 90C40 60 70 40 100 40C120 20 160 20 180 40C210 30 250 50 260 80C280 90 290 120 280 150C290 180 270 210 240 220C220 235 180 240 150 230C120 240 80 230 60 210C30 200 20 160 30 130C20 110 25 95 40 90Z" fill="#FDE047" stroke="#0F172A" strokeWidth="4" />
         
@@ -74,7 +74,7 @@ export function CartoonAiHeroIllustration({ className = '' }: { className?: stri
 export function CartoonSpeedIllustration({ className = '' }: { className?: string }) {
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
-      <svg className="w-full max-w-[320px] sm:max-w-[360px] h-auto drop-shadow-[4px_4px_0px_#0F172A]" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full max-w-[320px] sm:max-w-[360px] h-auto drop-shadow-[4px_4px_0px_rgba(15,23,42,0.8)]" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
         {/* Background Circle */}
         <circle cx="160" cy="120" r="100" fill="#6EE7B7" stroke="#0F172A" strokeWidth="4" />
         
@@ -115,9 +115,8 @@ export function CartoonSpeedIllustration({ className = '' }: { className?: strin
 }
 
 export function CartoonProductLogo({ name, logoBg, iconName, className = 'w-12 h-12' }: { name: string; logoBg: string; iconName: string; className?: string }) {
-  // Cartoon styled badge container with crisp thick border and inner icon/letter
   return (
-    <div className={`relative flex items-center justify-center rounded-2xl border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0F172A] shrink-0 font-extrabold text-white text-lg ${logoBg} ${className}`}>
+    <div className={`relative flex items-center justify-center rounded-2xl border-2 border-[var(--border)] shadow-[2px_2px_0px_0px_var(--cartoon-shadow)] shrink-0 font-extrabold text-white text-lg ${logoBg} ${className}`}>
       {name.substring(0, 2).toUpperCase()}
     </div>
   );

@@ -1,267 +1,192 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --bg-main: #FAF8F5;
-  --text-main: #0F172A;
-  --text-muted: #475569;
-  --card-bg: #FFFFFF;
-  --header-bg: #FAF8F5;
-  --border-color: #0F172A;
+  
+  /* Semantic Light Mode Color Tokens */
+  --background: #FAF8F5;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FFFFFF;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #475569;
+  --accent: #FACC15;
+  --accent-foreground: #0F172A;
+  --destructive: #F43F5E;
+  --destructive-foreground: #FFFFFF;
+  --success: #10B981;
+  --success-foreground: #FFFFFF;
+  --warning: #F59E0B;
+  --warning-foreground: #0F172A;
+  --info: #3B82F6;
+  --info-foreground: #FFFFFF;
+  --sale: #F43F5E;
+  --sale-foreground: #FFFFFF;
+  --border: #0F172A;
+  --input: #FFFFFF;
+  --ring: #2563EB;
+  --overlay: rgba(15, 23, 42, 0.6);
+  --cartoon-shadow: #0F172A;
+  --cartoon-shadow-muted: #64748B;
 }
 
 html.dark {
-  --bg-main: #0B0F19;
-  --text-main: #F1F5F9;
-  --text-muted: #94A3B8;
-  --card-bg: #151D2A;
-  --header-bg: #0B0F19;
-  --border-color: #334155;
+  /* Semantic Dark Mode Color Tokens */
+  --background: #0B0F19;
+  --foreground: #F8FAFC;
+  --card: #151D2A;
+  --card-foreground: #F8FAFC;
+  --popover: #151D2A;
+  --popover-foreground: #F8FAFC;
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E293B;
+  --secondary-foreground: #F8FAFC;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #EAB308;
+  --accent-foreground: #0F172A;
+  --destructive: #F43F5E;
+  --destructive-foreground: #FFFFFF;
+  --success: #10B981;
+  --success-foreground: #FFFFFF;
+  --warning: #F59E0B;
+  --warning-foreground: #0F172A;
+  --info: #3B82F6;
+  --info-foreground: #FFFFFF;
+  --sale: #F43F5E;
+  --sale-foreground: #FFFFFF;
+  --border: #334155;
+  --input: #1E293B;
+  --ring: #3B82F6;
+  --overlay: rgba(0, 0, 0, 0.75);
+  --cartoon-shadow: #000000;
+  --cartoon-shadow-muted: #0F172A;
   color-scheme: dark;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-main);
-  color: var(--text-main);
+  background-color: var(--background);
+  color: var(--foreground);
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-html.dark body {
-  background-color: #0B0F19;
-  color: #F1F5F9;
+  /* NO transition on body — theme change must be instant */
 }
 
 /* Custom Cartoon Border and Shadow Utilities */
 .cartoon-card {
-  background-color: var(--card-bg);
-  border: 2px solid var(--border-color);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
-  box-shadow: 3.5px 3.5px 0px 0px var(--border-color);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-html.dark .cartoon-card {
-  border-color: #334155;
-  box-shadow: 3.5px 3.5px 0px 0px #000000;
-  background-color: #151D2A;
-}
-
-/* Smooth Dark Mode Adjustments for Text and Inputs */
-html.dark h1, html.dark h2, html.dark h3, html.dark h4 {
-  color: #F8FAFC !important;
-}
-
-html.dark p:not([class*="text-white"]):not([class*="text-amber"]):not([class*="text-emerald"]):not([class*="text-blue"]):not([class*="text-rose"]) {
-  color: #94A3B8;
-}
-
-html.dark input, html.dark select, html.dark textarea {
-  background-color: #1E293B !important;
-  color: #F8FAFC !important;
-  border-color: #334155 !important;
-}
-
-html.dark input::placeholder {
-  color: #64748B !important;
-}
-
-/* Deep Dark Mode UI Components Override */
-html.dark .cartoon-card-hover {
-  background-color: #151D2A !important;
-  border-color: #334155 !important;
-  box-shadow: 3.5px 3.5px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-card-hover:hover {
-  box-shadow: 6px 6px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-primary {
-  background-color: #3B82F6 !important;
-  border-color: #334155 !important;
-  box-shadow: 3px 3px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-primary:hover {
-  background-color: #2563EB !important;
-  box-shadow: 5px 5px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-secondary {
-  background-color: #1E293B !important;
-  color: #F8FAFC !important;
-  border-color: #334155 !important;
-  box-shadow: 3px 3px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-secondary:hover {
-  background-color: #334155 !important;
-  box-shadow: 5px 5px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-accent {
-  background-color: #EAB308 !important;
-  border-color: #334155 !important;
-  box-shadow: 3px 3px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-button-accent:hover {
-  background-color: #CA8A04 !important;
-  box-shadow: 5px 5px 0px 0px #000000 !important;
-}
-
-html.dark .cartoon-badge {
-  border-color: #334155 !important;
-  box-shadow: 1.5px 1.5px 0px 0px #000000 !important;
-}
-
-/* Global Tailwind Overrides for Dark Mode Neo-brutalism */
-html.dark .bg-white, 
-html.dark .bg-\[\#FAF8F5\],
-html.dark .bg-\[\#FAF8F5\]\/95 {
-  background-color: #151D2A !important;
-}
-
-html.dark .bg-slate-50, html.dark .bg-slate-100 {
-  background-color: #1E293B !important;
-}
-
-html.dark .bg-blue-50 {
-  background-color: #1E3A8A !important;
-  color: #DBEAFE !important;
-}
-
-html.dark .bg-amber-50 {
-  background-color: #422006 !important;
-  color: #FEF3C7 !important;
-}
-
-html.dark .bg-emerald-50 {
-  background-color: #022C22 !important;
-  color: #D1FAE5 !important;
-}
-
-html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 {
-  color: #F8FAFC !important;
-}
-
-html.dark .text-slate-600, html.dark .text-slate-500 {
-  color: #94A3B8 !important;
-}
-
-html.dark .border-slate-900 {
-  border-color: #334155 !important;
-}
-
-/* Fix shadows for dark mode */
-html.dark .shadow-\[8px_8px_0px_0px_\#0F172A\] {
-  box-shadow: 8px 8px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[6px_6px_0px_0px_\#0F172A\] {
-  box-shadow: 6px 6px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[4px_4px_0px_0px_\#0F172A\] {
-  box-shadow: 4px 4px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[3px_3px_0px_0px_\#0F172A\] {
-  box-shadow: 3px 3px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[2px_2px_0px_0px_\#0F172A\] {
-  box-shadow: 2px 2px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[1\.5px_1\.5px_0px_0px_\#0F172A\] {
-  box-shadow: 1.5px 1.5px 0px 0px #000000 !important;
-}
-
-html.dark .shadow-\[1px_1px_0px_0px_\#0F172A\] {
-  box-shadow: 1px 1px 0px 0px #000000 !important;
+  box-shadow: 3.5px 3.5px 0px 0px var(--cartoon-shadow);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
 .cartoon-card-hover {
-  background-color: #ffffff;
-  border: 2px solid #0F172A;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 2px solid var(--border);
   border-radius: 1.25rem;
-  box-shadow: 3.5px 3.5px 0px 0px #0F172A;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 3.5px 3.5px 0px 0px var(--cartoon-shadow);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
 .cartoon-card-hover:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #0F172A;
+  box-shadow: 6px 6px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-button-primary {
-  background-color: #2563EB;
-  color: #ffffff;
-  border: 2px solid #0F172A;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 2px solid var(--border);
   border-radius: 0.875rem;
   font-weight: 700;
-  box-shadow: 3px 3px 0px 0px #0F172A;
-  transition: all 0.15s ease-out;
+  min-height: 44px;
+  box-shadow: 3px 3px 0px 0px var(--cartoon-shadow);
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, filter 0.1s ease-out;
 }
 
 .cartoon-button-primary:hover {
-  background-color: #1D4ED8;
+  filter: brightness(1.08);
   transform: translate(-1.5px, -1.5px);
-  box-shadow: 5px 5px 0px 0px #0F172A;
+  box-shadow: 5px 5px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-button-primary:active {
   transform: translate(1px, 1px);
-  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+  box-shadow: 1.5px 1.5px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-button-secondary {
-  background-color: #ffffff;
-  color: #0F172A;
-  border: 2px solid #0F172A;
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 2px solid var(--border);
   border-radius: 0.875rem;
   font-weight: 700;
-  box-shadow: 3px 3px 0px 0px #0F172A;
-  transition: all 0.15s ease-out;
+  min-height: 44px;
+  box-shadow: 3px 3px 0px 0px var(--cartoon-shadow);
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
 }
 
 .cartoon-button-secondary:hover {
-  background-color: #F8FAFC;
+  background-color: var(--muted);
   transform: translate(-1.5px, -1.5px);
-  box-shadow: 5px 5px 0px 0px #0F172A;
+  box-shadow: 5px 5px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-button-secondary:active {
   transform: translate(1px, 1px);
-  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+  box-shadow: 1.5px 1.5px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-button-accent {
-  background-color: #FACC15;
-  color: #0F172A;
-  border: 2px solid #0F172A;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border: 2px solid var(--border);
   border-radius: 0.875rem;
   font-weight: 700;
-  box-shadow: 3px 3px 0px 0px #0F172A;
-  transition: all 0.15s ease-out;
+  min-height: 44px;
+  box-shadow: 3px 3px 0px 0px var(--cartoon-shadow);
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, filter 0.1s ease-out;
 }
 
 .cartoon-button-accent:hover {
-  background-color: #EAB308;
+  filter: brightness(0.95);
   transform: translate(-1.5px, -1.5px);
-  box-shadow: 5px 5px 0px 0px #0F172A;
+  box-shadow: 5px 5px 0px 0px var(--cartoon-shadow);
+}
+
+.cartoon-button-accent:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1.5px 1.5px 0px 0px var(--cartoon-shadow);
 }
 
 .cartoon-badge {
-  border: 1.5px solid #0F172A;
+  border: 1.5px solid var(--border);
   border-radius: 9999px;
   font-weight: 700;
-  box-shadow: 1.5px 1.5px 0px 0px #0F172A;
+  box-shadow: 1.5px 1.5px 0px 0px var(--cartoon-shadow);
+}
+
+/* Touch Target Safety for Mobile Controls */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Custom Scrollbar */
@@ -271,15 +196,31 @@ html.dark .shadow-\[1px_1px_0px_0px_\#0F172A\] {
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--muted-foreground);
   border-radius: 4px;
-  border: 1.5px solid #0F172A;
+  border: 1.5px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--foreground);
+}
+
+/* Safe Area Inset Support for Mobile Browsers */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

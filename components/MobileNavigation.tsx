@@ -1,129 +1,128 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Search, User, Home, Grid, HelpCircle, ShieldCheck, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Home, Grid, Zap, HelpCircle, ShieldCheck, User, MessageSquare, Sun, Moon } from 'lucide-react';
+import { Sheet, SheetHeader, SheetTitle, SheetDescription, SheetContent, SheetFooter } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
+import { Card } from '@/components/ui/card';
 
 interface MobileNavigationProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenSearch: () => void;
+  onNavigateSection: (sectionId: string) => void;
   onOpenAuth: () => void;
   userName?: string;
-  onNavigateSection: (sectionId: string) => void;
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
 }
 
 export function MobileNavigation({
   isOpen,
   onClose,
-  onOpenSearch,
+  onNavigateSection,
   onOpenAuth,
   userName,
-  onNavigateSection,
+  isDarkMode = false,
+  onToggleTheme,
 }: MobileNavigationProps) {
-  if (!isOpen) return null;
+  const navItems = [
+    { id: 'hero', label: 'Beranda Utama', icon: Home },
+    { id: 'products', label: 'Semua Produk Digital', icon: Grid },
+    { id: 'categories', label: 'Cari Kategori', icon: Zap },
+    { id: 'how-it-works', label: 'Cara Belanja Mudah', icon: HelpCircle },
+    { id: 'faq', label: 'FAQ & Tanya Jawab', icon: ShieldCheck },
+  ];
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-hidden lg:hidden">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
-        />
-
-        {/* Sheet Drawer */}
-        <div className="fixed inset-y-0 left-0 max-w-full flex pr-10">
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="w-screen max-w-xs bg-[#FAF8F5] border-r-4 border-slate-900 shadow-2xl flex flex-col h-full"
-          >
-            {/* Header */}
-            <div className="p-5 bg-white border-b-2 border-slate-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 border-2 border-slate-900 text-white font-extrabold flex items-center justify-center text-base shadow-[1.5px_1.5px_0px_0px_#0F172A]">
-                  B
-                </div>
-                <span className="font-extrabold text-lg text-slate-900">
-                  Beliakun<span className="text-blue-600">.com</span>
-                </span>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 text-slate-900"
-                aria-label="Tutup menu"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Quick Search trigger in drawer */}
-            <div className="p-4 border-b border-slate-200">
-              <button
-                onClick={onOpenSearch}
-                className="w-full bg-white border-2 border-slate-900 rounded-xl px-3 py-2 text-xs font-bold text-slate-600 flex items-center gap-2 shadow-[2px_2px_0px_0px_#0F172A]"
-              >
-                <Search className="w-4 h-4 text-slate-400" />
-                <span>Cari produk digital...</span>
-              </button>
-            </div>
-
-            {/* Menu Links */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              <button
-                onClick={() => onNavigateSection('hero')}
-                className="w-full text-left cartoon-card p-3 bg-white font-extrabold text-sm text-slate-900 flex items-center gap-3 hover:bg-blue-50"
-              >
-                <Home className="w-4 h-4 text-blue-600" /> Beranda
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('products')}
-                className="w-full text-left cartoon-card p-3 bg-white font-extrabold text-sm text-slate-900 flex items-center gap-3 hover:bg-blue-50"
-              >
-                <ShoppingBag className="w-4 h-4 text-amber-500" /> Semua Produk
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('categories')}
-                className="w-full text-left cartoon-card p-3 bg-white font-extrabold text-sm text-slate-900 flex items-center gap-3 hover:bg-blue-50"
-              >
-                <Grid className="w-4 h-4 text-purple-600" /> Kategori Produk
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('how-it-works')}
-                className="w-full text-left cartoon-card p-3 bg-white font-extrabold text-sm text-slate-900 flex items-center gap-3 hover:bg-blue-50"
-              >
-                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Cara Belanja
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('faq')}
-                className="w-full text-left cartoon-card p-3 bg-white font-extrabold text-sm text-slate-900 flex items-center gap-3 hover:bg-blue-50"
-              >
-                <HelpCircle className="w-4 h-4 text-rose-500" /> FAQ
-              </button>
-            </div>
-
-            {/* Footer User Account */}
-            <div className="p-4 bg-white border-t-2 border-slate-900">
-              <button
-                onClick={onOpenAuth}
-                className="w-full cartoon-button-primary py-2.5 text-xs font-extrabold flex items-center justify-center gap-2"
-              >
-                <User className="w-4 h-4" />
-                <span>{userName ? `Akun: ${userName}` : 'Masuk / Daftar Akun'}</span>
-              </button>
-            </div>
-          </motion.div>
+    <Sheet isOpen={isOpen} onClose={onClose} side="left">
+      <SheetHeader onClose={onClose}>
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-white font-black text-base shrink-0">
+            ✨
+          </div>
+          <div>
+            <SheetTitle>Beliakun.com</SheetTitle>
+            <SheetDescription>Navigasi Cepat Toko</SheetDescription>
+          </div>
         </div>
-      </div>
-    </AnimatePresence>
+      </SheetHeader>
+
+      <SheetContent>
+        {/* User Status Card */}
+        <Card className="p-3.5 bg-blue-50 dark:bg-blue-950/60 border-[var(--border)] mb-4">
+          {userName ? (
+            <div className="flex items-center gap-3">
+              <Avatar fallback={userName} status="online" />
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold text-[var(--muted-foreground)] uppercase">Pengguna Aktif</span>
+                <h4 className="font-extrabold text-sm text-[var(--foreground)] truncate">{userName}</h4>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h4 className="font-extrabold text-xs text-[var(--foreground)]">Belum Masuk Akun</h4>
+                <p className="text-[10px] text-[var(--muted-foreground)] font-medium">Masuk untuk riwayat pesanan</p>
+              </div>
+              <Button size="xs" variant="primary" onClick={onOpenAuth}>
+                <User className="w-3.5 h-3.5" /> Masuk
+              </Button>
+            </div>
+          )}
+        </Card>
+
+        {/* Theme Mode Switcher Row for Mobile */}
+        {onToggleTheme && (
+          <div className="mb-4">
+            <button
+              onClick={onToggleTheme}
+              className="w-full cartoon-card p-3 bg-[var(--card)] border-[var(--border)] flex items-center justify-between font-extrabold text-xs text-[var(--foreground)] touch-target min-h-[44px] cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                {isDarkMode ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-indigo-600" />
+                )}
+                <span>{isDarkMode ? "Mode Gelap (Aktif)" : "Mode Terang (Aktif)"}</span>
+              </div>
+              <span className="text-[10px] font-bold text-[var(--muted-foreground)] px-2 py-0.5 rounded-md bg-[var(--muted)] border border-[var(--border)]/30">
+                Ubah
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* Navigation Items List */}
+        <div className="space-y-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onNavigateSection(item.id)}
+                className="w-full text-left cartoon-card p-3 bg-[var(--card)] border-[var(--border)] flex items-center gap-3 font-extrabold text-xs sm:text-sm text-[var(--foreground)] hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors touch-target min-h-[48px] cursor-pointer"
+              >
+                <div className="p-2 rounded-xl bg-[var(--muted)] text-blue-600 dark:text-blue-400 border border-[var(--border)]/40 shrink-0">
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </SheetContent>
+
+      <SheetFooter>
+        <div className="w-full space-y-2">
+          <Button
+            variant="cartoon"
+            onClick={() => window.open('https://wa.me/', '_blank')}
+            className="w-full py-2.5 text-xs font-extrabold flex items-center justify-center gap-2 min-h-[44px]"
+          >
+            <MessageSquare className="w-4 h-4" /> Hubungi CS via WhatsApp
+          </Button>
+        </div>
+      </SheetFooter>
+    </Sheet>
   );
 }

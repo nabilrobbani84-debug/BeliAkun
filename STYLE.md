@@ -365,3 +365,51 @@ Class Tailwind disusun dengan urutan logis:
 1. Seluruh AI Agent dan developer wajib mematuhinya sebagai aturan baku.
 2. Setiap kali ada penambahan fitur baru, pastikan class CSS mengikuti token di atas.
 3. Selalu verifikasi build dengan `lint_applet` dan `compile_applet`.
+
+---
+
+## 26. Panduan Tema (Theme Guidelines)
+
+### Semantic Token Rules
+Setiap elemen wajib merujuk pada CSS variables semantik di `globals.css`:
+* `var(--background)`: Latar belakang aplikasi (`#FAF8F5` light / `#0B0F19` dark)
+* `var(--foreground)`: Teks utama (`#0F172A` light / `#F8FAFC` dark)
+* `var(--card)`: Surface kartu (`#FFFFFF` light / `#151D2A` dark)
+* `var(--border)`: Border kartun 2px (`#0F172A` light / `#334155` dark)
+* `var(--cartoon-shadow)`: Hard offset shadow (`#0F172A` light / `#000000` dark)
+* `var(--muted)`: Surface sekunder (`#F1F5F9` light / `#1E293B` dark)
+* `var(--muted-foreground)`: Teks sekunder & caption (`#475569` light / `#94A3B8` dark)
+
+### Aturan Penggunaan `dark:` Modifier
+Gunakan modifier `dark:` hanya untuk penyesuaian visual spesifik yang tidak tercakup oleh token semantik dasar (seperti transparansi overlay `dark:bg-blue-950/60` atau highlight badge spesifik).
+
+---
+
+## 27. Responsive Design System
+
+### Utility Classes & Touch Targets
+* `touch-target`: Minimum 44×44px area sentuh untuk kontrol mobile (`min-h-[44px]`, `min-w-[44px]`).
+* `pb-safe`: Safe area inset bottom padding untuk perangkat mobile modern (`padding-bottom: env(safe-area-inset-bottom)`).
+
+### Grid System Rules
+* **Adaptive Mobile Columns**: `grid-cols-1 min-[380px]:grid-cols-2`
+* **Adaptive Tablet Columns**: `md:grid-cols-3 lg:grid-cols-4`
+* **Adaptive Desktop Columns**: `xl:grid-cols-5 2xl:grid-cols-6`
+
+### Spacing Scale Guidelines
+* Container Page Padding: `px-4 sm:px-5 md:px-6 lg:px-8`
+* Section Vertical Padding: `py-6 sm:py-8 md:py-12 lg:py-18 xl:py-20`
+* Card Padding Scale: `p-3.5 sm:p-4 md:p-5 lg:p-6`
+
+---
+
+## 28. Component Styling Standard
+
+### Aturan CVA (Class Variance Authority) & Class Ordering
+1. **Base Classes**: Tempatkan class layout, flex/grid, rounded, border, shadow, dan transition di baris awal base CVA.
+2. **Variants**: Gunakan nama variant berdasarkan fungsi semantik (`primary`, `secondary`, `cartoon`, `destructive`, `success`, `outline`, `ghost`). Dilarang menggunakan nama warna seperti `red`, `blue`, `green`.
+3. **Semantic Tokens**: Seluruh warna background, text, border, dan shadow wajib memanfaatkan CSS Variables (`var(--background)`, `var(--card)`, `var(--primary)`, `var(--border)`).
+4. **Touch Target Standard**: Seluruh komponen interaktif wajib memiliki minimum `min-h-[44px]` pada mobile.
+
+
+

@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Star, Check, ShieldCheck, Zap, ShoppingBag, Plus, Minus, Tag } from 'lucide-react';
+import { Star, Check, ShieldCheck, Zap, Tag } from 'lucide-react';
 import { Product, ProductPackage } from '@/types/store';
+import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogContent, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 interface QuickViewModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (product: Product, pkg: ProductPackage, quantity: number) => void;
+  onDirectBuy: (product: Product, pkg: ProductPackage) => void;
 }
 
 export function QuickViewModal({
   product,
   isOpen,
   onClose,
-  onAddToCart,
+  onDirectBuy,
 }: QuickViewModalProps) {
   const [selectedPackageId, setSelectedPackageId] = useState<string>('');
-  const [quantity, setQuantity] = useState<number>(1);
   const [prevProductId, setPrevProductId] = useState<string | null>(null);
 
   const currentProductId = product?.id || null;
@@ -25,218 +27,152 @@ export function QuickViewModal({
     setPrevProductId(currentProductId);
     if (product) {
       setSelectedPackageId(product.defaultPackageId || product.packages[0]?.id || '');
-      setQuantity(1);
     }
   }
 
-  if (!isOpen || !product) return null;
+  if (!product) return null;
 
   const currentPackage =
     product.packages.find((p) => p.id === selectedPackageId) || product.packages[0];
 
-  const handleAddToCartClick = () => {
+  const handleBuyNowClick = () => {
     if (currentPackage) {
-      onAddToCart(product, currentPackage, quantity);
+      onDirectBuy(product, currentPackage);
       onClose();
     }
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
-        />
-
-        {/* Modal Container */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 10 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 10 }}
-          className="relative w-full max-w-2xl bg-[#FAF8F5] border-4 border-slate-900 rounded-3xl shadow-[8px_8px_0px_0px_#0F172A] overflow-hidden z-10 my-6"
-        >
-          {/* Top Header */}
-          <div className="p-5 bg-white border-b-2 border-slate-900 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-2xl ${product.logoBg} border-2 border-slate-900 shadow-[2px_2px_0px_0px_#0F172A] flex items-center justify-center text-white font-extrabold text-lg shrink-0`}>
-                {product.name.substring(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-wide text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                  {product.category}
-                </span>
-                <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 mt-0.5 leading-tight">
-                  {product.name}
-                </h3>
-              </div>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="p-2 rounded-xl border-2 border-slate-900 bg-slate-100 hover:bg-slate-200 text-slate-900 transition-colors shadow-[2px_2px_0px_0px_#0F172A]"
-              aria-label="Tutup detail"
-            >
-              <X className="w-5 h-5" />
-            </button>
+    <Dialog isOpen={isOpen} onClose={onClose} maxWidth="2xl">
+      {/* Header */}
+      <DialogHeader onClose={onClose}>
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl ${product.logoBg} border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-white font-extrabold text-xs sm:text-lg shrink-0`}>
+            {product.name.substring(0, 2).toUpperCase()}
           </div>
+          <div className="min-w-0">
+            <Badge variant="promo">{product.category}</Badge>
+            <DialogTitle className="mt-0.5">{product.name}</DialogTitle>
+          </div>
+        </div>
+      </DialogHeader>
 
-          {/* Modal Content Body */}
-          <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-            {/* Rating & badges bar */}
-            <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-700">
-              <div className="flex items-center gap-1 bg-amber-100 px-2.5 py-1 rounded-full border border-amber-400 text-amber-950">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-600" />
-                <span>{product.rating}</span>
-                <span className="text-slate-500 font-normal">({product.reviewCount} ulasan)</span>
-              </div>
+      {/* Body Content */}
+      <DialogContent>
+        {/* Rating & Badges */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-bold">
+          <Badge variant="warning" className="gap-1">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-600" />
+            <span>{product.rating}</span>
+            <span className="text-[var(--muted-foreground)] font-normal hidden xs:inline">({product.reviewCount} ulasan)</span>
+          </Badge>
 
-              <div className="flex items-center gap-1 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-400 text-emerald-950">
-                <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{product.salesCount}+ Terjual</span>
-              </div>
+          <Badge variant="success" className="gap-1">
+            <Zap className="w-3.5 h-3.5 text-emerald-600" />
+            <span>{product.salesCount}+ Terjual</span>
+          </Badge>
 
-              <div className="flex items-center gap-1 bg-blue-100 px-2.5 py-1 rounded-full border border-blue-400 text-blue-950">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                <span>Garansi {product.guaranteeDays || 30} Hari</span>
-              </div>
-            </div>
+          <Badge variant="secondary" className="gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+            <span>Garansi {product.guaranteeDays || 30} Hari</span>
+          </Badge>
+        </div>
 
-            {/* Product Description */}
-            <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
-              {product.fullDescription || product.description}
-            </p>
+        {/* Product Description */}
+        <p className="text-xs sm:text-sm text-[var(--foreground)] font-medium leading-relaxed">
+          {product.fullDescription || product.description}
+        </p>
 
-            {/* Package Selection */}
-            <div>
-              <label className="block text-xs font-extrabold text-slate-900 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                <Tag className="w-4 h-4 text-blue-600" /> Pilih Durasi & Tipe Paket:
-              </label>
+        {/* Package Selection */}
+        <div>
+          <label className="block text-xs font-extrabold text-[var(--foreground)] uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <Tag className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Pilih Durasi & Tipe Paket:
+          </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {product.packages.map((pkg) => {
-                  const isSelected = pkg.id === selectedPackageId;
-                  return (
-                    <div
-                      key={pkg.id}
-                      onClick={() => setSelectedPackageId(pkg.id)}
-                      className={`cursor-pointer cartoon-card p-3.5 border-2 transition-all relative ${
-                        isSelected
-                          ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-600 shadow-[4px_4px_0px_0px_#2563EB]'
-                          : 'bg-white border-slate-900 hover:bg-slate-50'
-                      }`}
-                    >
-                      {pkg.isPopular && (
-                        <span className="absolute -top-2.5 right-3 bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-slate-900 shadow-[1px_1px_0px_0px_#000]">
-                          PALING DILIHAT
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {product.packages.map((pkg) => {
+              const isSelected = pkg.id === selectedPackageId;
+              return (
+                <Card
+                  key={pkg.id}
+                  variant={isSelected ? "selected" : "interactive"}
+                  onClick={() => setSelectedPackageId(pkg.id)}
+                  className="p-3 sm:p-3.5 cursor-pointer relative"
+                >
+                  {pkg.isPopular && (
+                    <div className="absolute -top-2.5 right-3">
+                      <Badge variant="bestseller">PALING DILIHAT</Badge>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-extrabold text-xs sm:text-sm text-[var(--foreground)]">
+                        {pkg.name}
+                      </h4>
+                      <span className="inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.2 rounded bg-[var(--muted)] text-[var(--foreground)] border border-[var(--border)]/40">
+                        Tipe: {pkg.type}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="block font-extrabold text-xs sm:text-sm text-blue-600 dark:text-blue-400">
+                        Rp{pkg.price.toLocaleString('id-ID')}
+                      </span>
+                      {pkg.originalPrice && (
+                        <span className="text-[10px] text-[var(--muted-foreground)] line-through font-semibold">
+                          Rp{pkg.originalPrice.toLocaleString('id-ID')}
                         </span>
                       )}
-
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">
-                            {pkg.name}
-                          </h4>
-                          <span className="inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-300">
-                            Tipe: {pkg.type}
-                          </span>
-                        </div>
-
-                        <div className="text-right">
-                          <span className="block font-extrabold text-sm text-blue-600">
-                            Rp{pkg.price.toLocaleString('id-ID')}
-                          </span>
-                          {pkg.originalPrice && (
-                            <span className="text-[10px] text-slate-400 line-through font-semibold">
-                              Rp{pkg.originalPrice.toLocaleString('id-ID')}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {pkg.description && (
-                        <p className="text-[11px] text-slate-600 font-medium mt-1.5 pt-1.5 border-t border-slate-200">
-                          {pkg.description}
-                        </p>
-                      )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
 
-            {/* Features Checklist */}
-            <div className="cartoon-card p-4 bg-white border-slate-900">
-              <h4 className="font-extrabold text-xs text-slate-900 uppercase tracking-wide mb-2.5">
-                Fitur & Keunggulan Paket Ini:
-              </h4>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-slate-800">
-                {product.features.map((feat, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="p-0.5 rounded-md bg-emerald-400 text-slate-950 border border-slate-900 shrink-0 mt-0.5">
-                      <Check className="w-3 h-3" />
-                    </span>
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  {pkg.description && (
+                    <p className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] font-medium mt-1.5 pt-1.5 border-t border-[var(--border)]/20">
+                      {pkg.description}
+                    </p>
+                  )}
+                </Card>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Modal Footer Controls */}
-          <div className="p-5 bg-white border-t-2 border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-              <span className="text-xs font-bold text-slate-600">Jumlah:</span>
-              <div className="flex items-center gap-2 bg-slate-100 border-2 border-slate-900 rounded-xl p-1">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-8 h-8 rounded-lg bg-white hover:bg-slate-200 text-slate-900 font-bold border border-slate-900 flex items-center justify-center"
-                  aria-label="Kurangi jumlah"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-8 text-center font-extrabold text-sm text-slate-900">
-                  {quantity}
+        {/* Features Checklist */}
+        <Card className="p-3.5 sm:p-4 bg-[var(--card)] border-[var(--border)]">
+          <h4 className="font-extrabold text-xs text-[var(--foreground)] uppercase tracking-wide mb-2">
+            Fitur & Keunggulan Paket Ini:
+          </h4>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-[var(--foreground)]">
+            {product.features.map((feat, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <span className="p-0.5 rounded-md bg-emerald-400 text-slate-950 border border-slate-900 shrink-0 mt-0.5">
+                  <Check className="w-3 h-3" />
                 </span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold flex items-center justify-center"
-                  aria-label="Tambah jumlah"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
+                <span>{feat}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </DialogContent>
 
-              <div className="text-right sm:hidden">
-                <span className="text-[10px] text-slate-500 font-bold block">Total:</span>
-                <span className="font-extrabold text-base text-blue-600">
-                  Rp{((currentPackage?.price || 0) * quantity).toLocaleString('id-ID')}
-                </span>
-              </div>
-            </div>
+      {/* Footer Controls */}
+      <DialogFooter className="flex items-center justify-between gap-3">
+        <div>
+          <span className="text-[10px] text-[var(--muted-foreground)] font-bold block">Harga Paket:</span>
+          <span className="font-black text-base sm:text-lg text-blue-600 dark:text-blue-400">
+            Rp{(currentPackage?.price || 0).toLocaleString('id-ID')}
+          </span>
+        </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="hidden sm:block text-right pr-2">
-                <span className="text-[10px] text-slate-500 font-bold block">Total:</span>
-                <span className="font-extrabold text-lg text-blue-600">
-                  Rp{((currentPackage?.price || 0) * quantity).toLocaleString('id-ID')}
-                </span>
-              </div>
-
-              <button
-                onClick={handleAddToCartClick}
-                className="w-full sm:w-auto cartoon-button-primary px-6 py-3 text-xs sm:text-sm flex items-center justify-center gap-2"
-              >
-                <ShoppingBag className="w-4 h-4" /> Tambah ke Keranjang
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+        <Button
+          variant="primary"
+          onClick={handleBuyNowClick}
+          className="w-full sm:w-auto min-h-[44px] px-6 font-extrabold"
+        >
+          <Zap className="w-4 h-4 text-amber-300" /> Beli Sekarang
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }

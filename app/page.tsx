@@ -1,28 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { AnnouncementBar } from '@/components/AnnouncementBar';
 import { StoreHeader } from '@/components/StoreHeader';
-import { PromotionCarousel } from '@/components/PromotionCarousel';
-import { BenefitList } from '@/components/BenefitList';
-import { CategorySection } from '@/components/CategorySection';
-import { ProductGrid } from '@/components/ProductGrid';
-import { FlashSaleSection } from '@/components/FlashSaleSection';
-import { ProductTabs } from '@/components/ProductTabs';
-import { HowItWorks } from '@/components/HowItWorks';
-import { TrustSection } from '@/components/TrustSection';
-import { ReviewCarousel } from '@/components/ReviewCarousel';
-import { FAQSection } from '@/components/FAQSection';
-import { NewsletterCTA } from '@/components/NewsletterCTA';
+import { PromotionCarousel } from '@/components/storefront/promotion-carousel';
+import { ProductCategorySection } from '@/components/storefront/product-category-section';
+import { AllProductsSection } from '@/components/storefront/all-products-section';
+import { TrustSection } from '@/components/storefront/trust-section';
+import { HomepageCTA } from '@/components/storefront/homepage-cta';
 import { StoreFooter } from '@/components/StoreFooter';
+
 import { QuickViewModal } from '@/components/QuickViewModal';
-import { CartSheet } from '@/components/CartSheet';
 import { CheckoutModal } from '@/components/CheckoutModal';
 import { SearchDialog } from '@/components/SearchDialog';
 import { AuthModal } from '@/components/AuthModal';
 import { ToastContainer, ToastMessage } from '@/components/ToastNotification';
 import { PRODUCTS } from '@/data/mockData';
-import { Product, ProductPackage, CartItem } from '@/types/store';
+import { Product, ProductPackage } from '@/types/store';
 
 const emptySubscribe = () => () => {};
 
@@ -34,48 +28,30 @@ export default function StorefrontPage() {
   );
 
   // State Management
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [checkoutProduct, setCheckoutProduct] = useState<Product | null>(null);
+  const [checkoutPackage, setCheckoutPackage] = useState<ProductPackage | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [userName, setUserName] = useState<string>('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Initialize theme from localStorage or system preference
+  // Theme state — only used by the toggle icon, CSS variables handle the rest
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // SSR-safe initial value — actual value set in useEffect
+    return false;
+  });
+
+  // Sync isDarkMode state with actual DOM class (set by layout.tsx inline script)
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setIsDarkMode(false);
-      document.documentElement.classList.remove('dark');
-    }
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 
-  const handleToggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        addToast('Mode Gelap Berhasil Aktif 🌙', 'Tampilan beralih ke tema gelap untuk kenyamanan mata.');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        addToast('Mode Terang Berhasil Aktif ☀️', 'Tampilan beralih ke tema terang.');
-      }
-      return next;
-    });
-  };
-
   // Toast Helpers
-  const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
+  const addToast = useCallback((title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
     const newToast: ToastMessage = {
       id: Date.now().toString() + '-' + Math.random().toString(36).substring(2, 9),
       type,
@@ -86,76 +62,50 @@ export default function StorefrontPage() {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== newToast.id));
     }, 3500);
-  };
+  }, []);
 
-  const handleDismissToast = (id: string) => {
+  const handleDismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  }, []);
 
-  // Cart Operations
-  const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
-    const cartItemId = `${product.id}-${pkg.id}`;
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === cartItemId);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === cartItemId
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      }
-      return [
-        ...prev,
-        {
-          id: cartItemId,
-          product,
-          selectedPackage: pkg,
-          quantity,
-        },
-      ];
-    });
+  // Theme Toggle — instant DOM mutation, no CSS transitions during change
+  const handleToggleTheme = useCallback(() => {
+    const html = document.documentElement;
+    const goingDark = !html.classList.contains('dark');
 
-    addToast(
-      'Berhasil Ditambahkan!',
-      `${product.name} (${pkg.duration}) telah masuk ke keranjang belanja.`
-    );
-  };
-
-  const handleUpdateQuantity = (id: string, newQty: number) => {
-    if (newQty <= 0) {
-      handleRemoveFromCart(id);
-      return;
+    // Instant theme switch via DOM — no React re-render cascade needed for color change
+    if (goingDark) {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: newQty } : item))
-    );
-  };
 
-  const handleRemoveFromCart = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-    addToast('Item Dihapus', 'Produk dikeluarkan dari keranjang.', 'info');
-  };
+    // Only update state for icon display
+    setIsDarkMode(goingDark);
+  }, []);
 
-  const handleClearCart = () => {
-    setCartItems([]);
-    addToast('Keranjang Dikosongkan', 'Seluruh item telah dikeluarkan.', 'info');
-  };
+  // Open Auth Modal with mode ('login' | 'register')
+  const handleOpenAuth = useCallback((mode: 'login' | 'register' = 'login') => {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
+  }, []);
 
-  // Checkout Handler
-  const handleOpenCheckout = (discount: number) => {
-    setAppliedDiscount(discount);
-    setIsCartOpen(false);
+  // Direct Buy Handler (Opens Checkout directly)
+  const handleDirectBuy = useCallback((product: Product, pkg: ProductPackage) => {
+    setCheckoutProduct(product);
+    setCheckoutPackage(pkg);
     setIsCheckoutOpen(true);
-  };
+  }, []);
 
-  const handleSuccessOrder = () => {
-    setCartItems([]);
+  const handleSuccessOrder = useCallback(() => {
     setIsCheckoutOpen(false);
     addToast('Pembayaran Sukses!', 'Detail akun sedang dikirimkan via WhatsApp.', 'success');
-  };
+  }, [addToast]);
 
   // Smooth Scroll Navigation Helper
-  const handleNavigateSection = (sectionId: string) => {
+  const handleNavigateSection = useCallback((sectionId: string) => {
     if (sectionId === 'hero') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -164,34 +114,30 @@ export default function StorefrontPage() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, []);
 
-  // Filtered Products for Category Section
-  const categoryProducts = selectedCategoryId === 'all'
-    ? PRODUCTS
-    : PRODUCTS.filter((p) => p.categoryId === selectedCategoryId);
+  // Filtered Products for All Products Section
+  const filteredProducts = useMemo(() => {
+    if (selectedCategoryId === 'all') return PRODUCTS;
+    return PRODUCTS.filter((p) => p.categoryId === selectedCategoryId || p.tags.some(t => t.toLowerCase() === selectedCategoryId));
+  }, [selectedCategoryId]);
 
   if (!isHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]" suppressHydrationWarning>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]" suppressHydrationWarning>
         <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-slate-900 font-sans" suppressHydrationWarning>
-      {/* 1. Announcement Bar */}
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans" suppressHydrationWarning>
+      {/* 1. Header Section */}
       <AnnouncementBar
         onPromoClick={() => handleNavigateSection('products')}
       />
-
-      {/* 2. Header & Sticky Navigation */}
       <StoreHeader
-        cartItemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={handleOpenAuth}
         userName={userName}
         onNavigateSection={handleNavigateSection}
         isDarkMode={isDarkMode}
@@ -199,107 +145,68 @@ export default function StorefrontPage() {
       />
 
       {/* Main Storefront Body Content */}
-      <main className="flex-1 space-y-4">
-        {/* 3. Promotional Image Banner Slider */}
+      <main className="flex-1">
+        {/* 2. Hero Section: Promotion Banner Image Slider */}
         <PromotionCarousel
-          onCtaClick={(categoryTarget) => {
-            if (categoryTarget === 'ai') {
+          onCtaClick={(target) => {
+            if (target === 'ai') {
               setSelectedCategoryId('ai');
               handleNavigateSection('products');
-            } else if (categoryTarget === 'how-it-works') {
-              handleNavigateSection('how-it-works');
             } else {
               handleNavigateSection('products');
             }
           }}
         />
 
-        {/* 4. Quick Benefits */}
-        <BenefitList />
-
-        {/* 5. Product Categories */}
-        <CategorySection
+        {/* 3. Kategori Produk */}
+        <ProductCategorySection
           selectedCategoryId={selectedCategoryId}
           onSelectCategory={(catId) => {
             setSelectedCategoryId(catId);
-            handleNavigateSection('category-products-anchor');
+            handleNavigateSection('products');
           }}
         />
 
-        {/* Dynamic Category Products Grid Anchor */}
-        <div id="category-products-anchor">
-          <ProductGrid
-            title={selectedCategoryId === 'all' ? 'Produk Paling Dicari' : `Kategori: ${selectedCategoryId.toUpperCase()}`}
-            subtitle="Klik 'Detail' untuk memilih paket atau '+ Keranjang' untuk order instan."
-            products={categoryProducts}
-            onQuickView={(prod) => setQuickViewProduct(prod)}
-            onAddToCart={handleAddToCart}
-          />
-        </div>
-
-        {/* 7. Flash Sale / Promo Terbatas */}
-        <FlashSaleSection
-          products={PRODUCTS}
+        {/* 4. Semua Produk */}
+        <AllProductsSection
+          products={filteredProducts}
+          selectedCategoryId={selectedCategoryId}
+          onResetCategory={() => setSelectedCategoryId('all')}
           onQuickView={(prod) => setQuickViewProduct(prod)}
-          onAddToCart={handleAddToCart}
-          onViewAllPromo={() => handleNavigateSection('products')}
+          onDirectBuy={handleDirectBuy}
         />
 
-        {/* 8. Products by Category Tabs */}
-        <ProductTabs
-          products={PRODUCTS}
-          onQuickView={(prod) => setQuickViewProduct(prod)}
-          onAddToCart={handleAddToCart}
-        />
-
-        {/* 9. How It Works */}
-        <HowItWorks />
-
-        {/* 10. Trust Section */}
+        {/* 5. Section Kepercayaan */}
         <TrustSection />
 
-        {/* 11. Customer Reviews */}
-        <ReviewCarousel />
-
-        {/* 12. FAQ Section */}
-        <FAQSection />
-
-        {/* 13. Newsletter Call to Action */}
-        <NewsletterCTA />
+        {/* 6. CTA Section */}
+        <HomepageCTA
+          onExploreProducts={() => handleNavigateSection('products')}
+        />
       </main>
 
-      {/* 14. Footer */}
+      {/* 7. Footer Section */}
       <StoreFooter
         onNavigateSection={handleNavigateSection}
         onSelectCategory={(catId) => {
           setSelectedCategoryId(catId);
-          handleNavigateSection('category-products-anchor');
+          handleNavigateSection('products');
         }}
       />
 
-      {/* Interactive Modals & Drawers */}
+      {/* Interactive Modals */}
       <QuickViewModal
         product={quickViewProduct}
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
-      />
-
-      <CartSheet
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveFromCart}
-        onClearCart={handleClearCart}
-        onCheckout={(discount) => handleOpenCheckout(discount)}
+        onDirectBuy={handleDirectBuy}
       />
 
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
-        cartItems={cartItems}
-        discountAmount={appliedDiscount}
+        product={checkoutProduct}
+        selectedPackage={checkoutPackage}
         onSuccessOrder={handleSuccessOrder}
       />
 
@@ -312,6 +219,7 @@ export default function StorefrontPage() {
 
       <AuthModal
         isOpen={isAuthOpen}
+        initialMode={authMode}
         onClose={() => setIsAuthOpen(false)}
         addToast={addToast}
         onSuccessLogin={(name, isGoogleLogin, googleEmail) => {

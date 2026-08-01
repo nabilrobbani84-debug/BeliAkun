@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
@@ -16,7 +16,7 @@ interface ToastProps {
 
 export function ToastContainer({ toasts, onDismiss }: ToastProps) {
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full px-4 pointer-events-none">
+    <div className="fixed bottom-4 sm:bottom-5 right-3 sm:right-5 z-50 flex flex-col gap-2.5 max-w-sm w-[calc(100vw-1.5rem)] pointer-events-none pb-safe">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
@@ -25,40 +25,40 @@ export function ToastContainer({ toasts, onDismiss }: ToastProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className={`pointer-events-auto cartoon-card p-4 flex items-start gap-3 relative ${
+            className={`pointer-events-auto cartoon-card p-3.5 sm:p-4 flex items-start gap-2.5 sm:gap-3 relative ${
               toast.type === 'success'
-                ? 'bg-emerald-50 border-slate-900'
+                ? 'bg-emerald-50 dark:bg-emerald-950/90 border-[var(--border)]'
                 : toast.type === 'error'
-                ? 'bg-rose-50 border-slate-900'
-                : 'bg-blue-50 border-slate-900'
+                ? 'bg-rose-50 dark:bg-rose-950/90 border-[var(--border)]'
+                : 'bg-blue-50 dark:bg-blue-950/90 border-[var(--border)]'
             }`}
           >
             <div className="shrink-0 mt-0.5">
               {toast.type === 'success' && (
-                <div className="p-1.5 rounded-xl bg-emerald-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#0F172A]">
-                  <CheckCircle2 className="w-5 h-5" />
+                <div className="p-1 sm:p-1.5 rounded-xl bg-emerald-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               )}
               {toast.type === 'error' && (
-                <div className="p-1.5 rounded-xl bg-rose-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#0F172A]">
-                  <AlertCircle className="w-5 h-5" />
+                <div className="p-1 sm:p-1.5 rounded-xl bg-rose-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               )}
               {toast.type === 'info' && (
-                <div className="p-1.5 rounded-xl bg-blue-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#0F172A]">
-                  <Info className="w-5 h-5" />
+                <div className="p-1 sm:p-1.5 rounded-xl bg-blue-400 text-slate-950 border border-slate-900 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Info className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               )}
             </div>
 
-            <div className="flex-1 pr-6">
-              <h4 className="font-extrabold text-sm text-slate-900">{toast.title}</h4>
-              <p className="text-xs text-slate-700 mt-0.5 font-medium">{toast.message}</p>
+            <div className="flex-1 min-w-0 pr-5 sm:pr-6">
+              <h4 className="font-extrabold text-xs sm:text-sm text-[var(--foreground)] truncate">{toast.title}</h4>
+              <p className="text-[11px] sm:text-xs text-[var(--foreground)] mt-0.5 font-medium leading-snug">{toast.message}</p>
             </div>
 
             <button
               onClick={() => onDismiss(toast.id)}
-              className="absolute top-3 right-3 text-slate-500 hover:text-slate-900 p-1 rounded-lg transition-colors"
+              className="absolute top-2.5 right-2.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] p-1 rounded-lg transition-colors touch-target"
               aria-label="Tutup pemberitahuan"
             >
               <X className="w-4 h-4" />

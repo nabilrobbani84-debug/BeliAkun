@@ -345,3 +345,64 @@ Sebelum menyelesaikan pekerjaan pembuatan halaman/komponen baru, verifikasi poin
 1. Dilarang mengubah token global (`globals.css`) tanpa alasan terukur yang berlaku secara umum untuk seluruh aplikasi.
 2. Setiap penambahan variant warna atau button baru wajib didokumentasikan di `STYLE.md` dan `DESIGN.md` pada turn yang sama.
 3. Seluruh perubahan harus tetap mempertahankan gaya **Modern Cartoon Commerce** khas Beliakun.com.
+
+---
+
+## 19. Panduan Tema (Theme Guidelines)
+
+### Karakter Light Mode
+* **Warm & Clean**: Menggunakan canvas `#FAF8F5` dengan kartu surface putih `#FFFFFF`.
+* **Garis Tepi Tegas**: Border hitam Slate 900 (`#0F172A`, `2px`) dan hard offset shadow (`3.5px` s.d. `6px`).
+* **Kontras Tinggi**: Teks utama Slate 900 `#0F172A` di atas latar Warm Cream memiliki rasio kontras > 12:1 (memenuhi WCAG AA & AAA).
+
+### Karakter Dark Mode
+* **Deep Navy & Charcoal Canvas**: Menggunakan canvas `#0B0F19` dengan surface kartu `#151D2A` (bukan pure black `#000000`).
+* **Offset Shadow Hitam Pekat**: Shadow kartun tetap terlihat di dark mode menggunakan shadow solid `#000000` dan border `#334155`.
+* **Off-White Typography**: Teks utama `#F8FAFC`, muted text `#94A3B8`, memastikan tidak ada background putih tertinggal.
+* **Semantic Token Compliance**: Menggunakan CSS Variables (`var(--background)`, `var(--foreground)`, `var(--card)`, `var(--border)`, `var(--cartoon-shadow)`) di seluruh komponen.
+
+---
+
+## 20. Responsive Design System
+
+### Standard Breakpoints
+Beliakun.com menggunakan pendekatan **Mobile-First** dengan Tailwind CSS breakpoints baku:
+
+| Breakpoint | Min Width | Target Perangkat |
+| :--- | :--- | :--- |
+| `default` | `320px` | Perangkat Mobile Kecil (iPhone SE / Android Compact 320–360px) |
+| `sm:` | `640px` | Perangkat Mobile Besar / Mini Tablet |
+| `md:` | `768px` | Tablet Portrait (iPad 768×1024) |
+| `lg:` | `1024px` | Tablet Landscape / Laptop Kecil (1024×768) |
+| `xl:` | `1280px` | Laptop / Desktop Standar (1280×800, 1440×900) |
+| `2xl:` | `1536px` | Desktop Ultrawide (1920×1080) |
+
+### Tokens & Responsive Metrics
+
+| Token / Metrics | Mobile (320px–430px) | Tablet (768px–1024px) | Desktop (1280px–1920px) |
+| :--- | :--- | :--- | :--- |
+| **Page Container Max Width** | `100%` | `100%` | `max-w-[1600px] mx-auto` |
+| **Page Horizontal Padding** | `px-4` (16px) | `md:px-6` (24px) | `lg:px-8` (32px) |
+| **Section Vertical Gap** | `py-6 sm:py-8` (24–32px) | `md:py-12` (48px) | `lg:py-18 xl:py-20` (72–80px) |
+| **Grid Column Count** | `cols-1` (<380px) / `cols-2` (380px+) | `md:cols-3 lg:cols-4` | `xl:cols-5 2xl:cols-6` |
+| **Grid Gap** | `gap-3` (12px) | `sm:gap-4` (16px) | `lg:gap-5` (20px) |
+| **Card Padding** | `p-3.5` (14px) | `sm:p-4` (16px) | `md:p-5` (20px) |
+| **Touch Target Minimum** | `min-h-[44px]` (44×44px) | `min-h-[44px]` (44×44px) | `min-h-[40px]` (40×40px) |
+
+### Overflow & Viewport Safety Rules
+1. **Dilarang keras menyembunyikan masalah layout dengan `overflow-x-hidden` global**.
+2. **Product Grid Adaptive**: Pada layar < 380px (iPhone SE 320px), grid otomatis beralih ke `grid-cols-1` agar card produk dan tombol tidak terhimpit.
+3. **Modal & Drawer Inset**: Modal dialog menggunakan `w-[calc(100vw-1.5rem)] max-w-2xl` agar tidak meluap keluar layar mobile 320px. Drawer sheet menggunakan safe area bottom padding (`pb-safe`).
+
+---
+
+## 21. Beliakun UI Component Principles
+
+### filosofi Komponen UI
+1. **Identitas Unik**: Komponen Beliakun.com menggunakan gaya **Modern Cartoon Commerce** (border 2px tegas, hard offset shadow, warm canvas `#FAF8F5`, deep navy dark `#0B0F19`, touch target 44px+).
+2. **Reuse over Duplicate**: Developer dan AI Agent wajib menggunakan komponen dari `components/ui/`, `components/beliakun-ui/`, dan `components/patterns/` yang sudah tersedia di [COMPONENTS.md](file:///d:/Folder%20Pribadi/4.%20Bisnis/Beliakun.com/Websites/BeliAkun/COMPONENTS.md).
+3. **Composition over Monolith**: Gunakan pola komposisi subkomponen (misal `<Card><CardHeader><CardTitle/></CardHeader></Card>`).
+4. **Accessible & Responsive**: Semua komponen diuji keyboard focus (`focus-visible:ring-2`), screen reader label, dan mobile safe area (`pb-safe`).
+
+
+
