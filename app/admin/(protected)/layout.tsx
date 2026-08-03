@@ -32,6 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Produk', href: '/admin/products', icon: Package },
     { name: 'Kategori', href: '/admin/categories', icon: FolderTree },
+    { name: 'Stok', href: '/admin/stock', icon: ShieldCheck },
   ]
 
   return (

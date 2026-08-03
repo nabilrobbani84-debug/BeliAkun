@@ -31,6 +31,7 @@ export function AuthModal({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setView(initialMode);
     }
   }, [isOpen, initialMode]);

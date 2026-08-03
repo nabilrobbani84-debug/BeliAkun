@@ -48,3 +48,17 @@ Untuk memastikan rute admin terlindungi dengan benar di Cloudflare Workers:
 3. Setelah login sebagai admin, pastikan cookie session tersimpan di browser Anda (`sb-access-token` dan `sb-refresh-token`).
 4. Verifikasi bahwa refresh halaman tidak mengeluarkan Anda dari dashboard admin panel.
 5. Cobalah logout dan pastikan Anda dialihkan kembali ke `/admin/login`.
+
+---
+
+# Step 3 — Inventory Encryption Secret
+
+Modul stok memerlukan `INVENTORY_MASTER_KEY_V1` yang disimpan sebagai *server-only environment variable* di Cloudflare.
+
+1. Generate key seperti yang dijelaskan di file `SETUP_INVENTORY.md`.
+2. Buka menu **Settings** -> **Environment variables** di halaman *project* Cloudflare Anda.
+3. Tambahkan variable rahasia (*secret*):
+   - Variable name: `INVENTORY_MASTER_KEY_V1`
+   - Value: (Paste key yang Anda buat)
+4. **PENTING:** Pastikan Anda mengklik tombol **Encrypt** agar Cloudflare menyembunyikan nilainya!
+5. Lakukan deploy ulang (Redeploy) agar environment variable baru dapat dibaca oleh Cloudflare Workers.

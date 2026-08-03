@@ -70,7 +70,7 @@ export function ProductTabs({
                 key={product.id}
                 product={product}
                 onQuickView={onQuickView}
-                onAddToCart={onAddToCart}
+                onDirectBuy={(p, pkg) => onAddToCart(p, pkg, 1)}
               />
             ))}
           </ResponsiveGrid>

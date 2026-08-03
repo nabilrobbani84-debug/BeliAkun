@@ -44,6 +44,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [userName, setUserName] = useState<string>('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Toast Helpers
   const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -159,12 +160,11 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
 
       {/* 2. Header & Sticky Navigation */}
       <StoreHeader
-        cartItemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
         userName={userName}
         onNavigateSection={handleNavigateSection}
+        isDarkMode={isDarkMode}
+        onToggleTheme={() => setIsDarkMode(!isDarkMode)}
       />
 
       {/* Main Storefront Body Content */}
@@ -252,7 +252,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         product={quickViewProduct}
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
+        onDirectBuy={(p, pkg) => handleAddToCart(p, pkg, 1)}
       />
 
       <CartSheet

@@ -62,3 +62,38 @@ export interface ProductVariant {
 export interface ProductWithVariants extends Product {
   variants: ProductVariant[];
 }
+
+export type InventoryStatus = 'available' | 'reserved' | 'sold' | 'expired' | 'invalid' | 'replaced';
+
+export interface InventoryItem {
+  id: string;
+  variant_id: string;
+  status: InventoryStatus;
+  encrypted_payload: any; // jsonb
+  payload_fingerprint: string;
+  encryption_version: number;
+  internal_note: string | null;
+  usage_instructions: string | null;
+  delivery_note: string | null;
+  expires_at: string | null;
+  reservation_reference: string | null;
+  reserved_at: string | null;
+  reserved_until: string | null;
+  sold_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InventoryEvent {
+  id: string;
+  inventory_item_id: string;
+  actor_id: string | null;
+  event_type: string;
+  previous_status: InventoryStatus | null;
+  new_status: InventoryStatus | null;
+  summary: string;
+  metadata: any | null; // jsonb
+  created_at: string;
+}

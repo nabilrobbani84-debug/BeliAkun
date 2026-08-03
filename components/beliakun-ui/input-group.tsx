@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface InputGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface InputGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'prefix'> {
   prefix?: React.ReactNode
   suffix?: React.ReactNode
   children: React.ReactNode

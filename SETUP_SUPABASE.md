@@ -86,3 +86,16 @@ Jalankan file `supabase/migrations/0002_admin_auth_catalog_management.sql` mengg
    WHERE id = 'UUID_USER_ANDA_YANG_DISALIN';
    ```
 7. Sekarang, Anda dapat masuk ke `/admin/login` dengan kredensial tersebut!
+
+---
+
+# Step 3 — Sistem Stok dan Inventory
+
+## I. Menjalankan Migration Step 3
+Jalankan file `supabase/migrations/0003_inventory_system.sql` menggunakan cara yang sama:
+- Buka **SQL Editor**.
+- Buat **New Query**.
+- Salin seluruh isi file migrasi Step 3 dan klik **Run**.
+- Verifikasi tabel baru `inventory_items` dan `inventory_events` telah dibuat.
+
+Untuk petunjuk pembuatan kunci enkripsi (Master Key) agar modul stok dapat berjalan, lihat panduan di [SETUP_INVENTORY.md](./SETUP_INVENTORY.md).

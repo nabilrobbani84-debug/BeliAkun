@@ -12,8 +12,10 @@ import { Badge } from '@/components/ui/badge';
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  product: Product | null;
-  selectedPackage: ProductPackage | null;
+  product?: Product | null;
+  selectedPackage?: ProductPackage | null;
+  cartItems?: import('@/types/store').CartItem[];
+  discountAmount?: number;
   onSuccessOrder: () => void;
 }
 
@@ -22,6 +24,8 @@ export function CheckoutModal({
   onClose,
   product,
   selectedPackage,
+  cartItems,
+  discountAmount,
   onSuccessOrder,
 }: CheckoutModalProps) {
   const [step, setStep] = useState<'form' | 'payment' | 'success'>('form');
@@ -33,9 +37,16 @@ export function CheckoutModal({
   const [orderId, setOrderId] = useState(123456);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
-  if (!product || !selectedPackage) return null;
+  if (!product && (!cartItems || cartItems.length === 0)) return null;
 
-  const totalPayment = selectedPackage.price;
+  const displayProduct = product || cartItems?.[0]?.product;
+  const displayPackage = selectedPackage || cartItems?.[0]?.selectedPackage;
+
+  if (!displayProduct || !displayPackage) return null;
+
+  const totalPayment = product && selectedPackage 
+    ? selectedPackage.price 
+    : Math.max(0, (cartItems || []).reduce((sum, item) => sum + item.selectedPackage.price * item.quantity, 0) - (discountAmount || 0));
 
   const handleNextToPayment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,15 +120,15 @@ export function CheckoutModal({
               </span>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className={`w-8 h-8 rounded-xl ${product.logoBg} border border-slate-900 flex items-center justify-center text-white font-extrabold text-xs shrink-0`}>
-                    {product.name.substring(0, 2).toUpperCase()}
+                  <div className={`w-8 h-8 rounded-xl ${displayProduct.logoBg} border border-slate-900 flex items-center justify-center text-white font-extrabold text-xs shrink-0`}>
+                    {displayProduct.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-extrabold text-xs sm:text-sm text-[var(--foreground)] truncate">
-                      {product.name}
+                      {displayProduct.name} {cartItems && cartItems.length > 1 ? `(+${cartItems.length - 1} item)` : ''}
                     </h4>
                     <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 block truncate">
-                      Paket: {selectedPackage.name} ({selectedPackage.duration})
+                      Paket: {displayPackage.name} ({displayPackage.duration})
                     </span>
                   </div>
                 </div>
@@ -319,7 +330,7 @@ export function CheckoutModal({
                 <ShieldCheck className="w-4 h-4 shrink-0" /> Pesanan ID #BLK-{orderId}
               </div>
               <p className="text-[var(--foreground)]">
-                Detail kredensial akun / link undangan <strong className="text-blue-600 font-extrabold">{product.name} ({selectedPackage.duration})</strong> telah disiapkan dan dikirimkan ke WhatsApp <strong className="text-[var(--foreground)]">{whatsappNumber}</strong>.
+                Detail kredensial akun / link undangan <strong className="text-blue-600 font-extrabold">{displayProduct.name} ({displayPackage.duration})</strong> telah disiapkan dan dikirimkan ke WhatsApp <strong className="text-[var(--foreground)]">{whatsappNumber}</strong>.
               </p>
             </Card>
 
