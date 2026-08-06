@@ -13,6 +13,7 @@ import {
   X,
   ShieldCheck,
   Store,
+  ShoppingCart,
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -30,6 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Pesanan', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Produk', href: '/admin/products', icon: Package },
     { name: 'Kategori', href: '/admin/categories', icon: FolderTree },
     { name: 'Stok', href: '/admin/stock', icon: ShieldCheck },

@@ -71,7 +71,7 @@ CREATE INDEX idx_inventory_events_item_id ON public.inventory_events (inventory_
 CREATE TRIGGER update_inventory_items_updated_at
 BEFORE UPDATE ON public.inventory_items
 FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+EXECUTE FUNCTION set_updated_at();
 
 -- 5. Aktifkan Row Level Security (RLS)
 ALTER TABLE public.inventory_items ENABLE ROW LEVEL SECURITY;

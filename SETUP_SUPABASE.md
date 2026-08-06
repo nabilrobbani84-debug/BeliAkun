@@ -99,3 +99,25 @@ Jalankan file `supabase/migrations/0003_inventory_system.sql` menggunakan cara y
 - Verifikasi tabel baru `inventory_items` dan `inventory_events` telah dibuat.
 
 Untuk petunjuk pembuatan kunci enkripsi (Master Key) agar modul stok dapat berjalan, lihat panduan di [SETUP_INVENTORY.md](./SETUP_INVENTORY.md).
+
+---
+
+# Step 4 — Guest Checkout & Orders
+
+## J. Menjalankan Migration Step 4
+Jalankan file `supabase/migrations/0004_guest_checkout_orders.sql`:
+- Buka **SQL Editor** -> **New Query**.
+- Salin seluruh isi file migrasi Step 4 dan klik **Run**.
+- Verifikasi tabel baru `orders`, `order_items`, `order_access_tokens`, dan `order_events` telah dibuat.
+
+---
+
+# Step 5 — Payments & KlikQRIS
+
+## K. Menjalankan Migration Step 5
+Jalankan file `supabase/migrations/0005_klikqris_payments.sql`:
+- Buka **SQL Editor** -> **New Query**.
+- Salin seluruh isi file migrasi Step 5 dan klik **Run**.
+- Verifikasi tabel baru `payments` dan `payment_events` telah terbuat.
+- Pastikan hak eksekusi RPC `settle_paid_payment` dan `settle_expired_payment` dibatasi dari akses publik/anonim secara langsung.
+

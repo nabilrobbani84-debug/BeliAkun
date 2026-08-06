@@ -23,6 +23,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { ToastContainer, ToastMessage } from '@/components/ToastNotification';
 import { PRODUCTS } from '@/data/mockData';
 import { Product, ProductPackage, CartItem, Category } from '@/types/store';
+import { useRouter } from 'next/navigation';
 
 const emptySubscribe = () => () => {};
 
@@ -45,6 +46,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   const [userName, setUserName] = useState<string>('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const router = useRouter();
 
   // Toast Helpers
   const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -64,33 +66,10 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Cart Operations
+  // Cart Operations (Step 4: Direct to Checkout)
   const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
-    const cartItemId = `${product.id}-${pkg.id}`;
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === cartItemId);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === cartItemId
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      }
-      return [
-        ...prev,
-        {
-          id: cartItemId,
-          product,
-          selectedPackage: pkg,
-          quantity,
-        },
-      ];
-    });
-
-    addToast(
-      'Berhasil Ditambahkan!',
-      `${product.name} (${pkg.duration}) telah masuk ke keranjang belanja.`
-    );
+    // Step 4: Skip cart and go directly to checkout
+    router.push(`/checkout?variant=${pkg.id}`);
   };
 
   const handleUpdateQuantity = (id: string, newQty: number) => {
@@ -253,24 +232,6 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         onDirectBuy={(p, pkg) => handleAddToCart(p, pkg, 1)}
-      />
-
-      <CartSheet
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveFromCart}
-        onClearCart={handleClearCart}
-        onCheckout={(discount) => handleOpenCheckout(discount)}
-      />
-
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        cartItems={cartItems}
-        discountAmount={appliedDiscount}
-        onSuccessOrder={handleSuccessOrder}
       />
 
       <SearchDialog

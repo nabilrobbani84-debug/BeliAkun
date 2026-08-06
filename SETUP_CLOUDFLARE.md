@@ -62,3 +62,35 @@ Modul stok memerlukan `INVENTORY_MASTER_KEY_V1` yang disimpan sebagai *server-on
    - Value: (Paste key yang Anda buat)
 4. **PENTING:** Pastikan Anda mengklik tombol **Encrypt** agar Cloudflare menyembunyikan nilainya!
 5. Lakukan deploy ulang (Redeploy) agar environment variable baru dapat dibaca oleh Cloudflare Workers.
+
+---
+
+# Step 5 — KlikQRIS Webhooks & Secrets
+
+Modul pembayaran menggunakan KlikQRIS memerlukan penyimpanan kredensial API Key dan Merchant ID yang aman di Cloudflare Workers.
+
+## F. KlikQRIS Secrets
+1. Buka **Settings** -> **Environment variables** di proyek Workers/Pages Cloudflare Anda.
+2. Tambahkan variable rahasia (*secret*) baru dengan mengklik **Add variable**:
+   - `KLIKQRIS_API_KEY` (Secret - Wajib di-encrypt!)
+   - `KLIKQRIS_MERCHANT_ID` (Secret - Wajib di-encrypt!)
+   - `SUPABASE_SERVICE_ROLE_KEY` (Secret - Pastikan ini terenkripsi agar tidak terekspos ke browser!)
+3. Tambahkan variable biasa (*plain text*):
+   - `KLIKQRIS_ENABLED` = `true`
+   - `KLIKQRIS_DRIVER` = `sandbox` (Ganti dengan `inhouse` atau `my_pg` pada produksi)
+   - `KLIKQRIS_WEBHOOK_URL` = `https://domain-anda.com/api/webhooks/klikqris`
+   - `KLIKQRIS_REQUEST_TIMEOUT_MS` = `10000`
+   - `PAYMENT_STATUS_SYNC_INTERVAL_SECONDS` = `15`
+4. Klik **Save** dan deploy ulang proyek Anda.
+
+## G. Cloudflare WAF Exception untuk Webhook
+Server KlikQRIS akan mengirimkan HTTP POST request langsung ke URL webhook Anda. 
+Agar request tersebut tidak diblokir oleh sistem perlindungan bot/WAF Cloudflare:
+1. Masuk ke dashboard domain Anda di Cloudflare.
+2. Pilih menu **Security** -> **WAF** -> **Custom rules**.
+3. Buat rule baru (misal: "Bypass WAF for KlikQRIS Webhook"):
+   - Field: `URI Path`
+   - Operator: `equals`
+   - Value: `/api/webhooks/klikqris`
+   - Action: `Bypass` (Pilih bypass untuk WAF components like "Super Bot Fight Mode", "Security Level", "Rate Limiting" jika diperlukan, atau "Skip" WAF rules).
+4. Klik **Deploy** untuk mengaktifkan aturan tersebut.
