@@ -239,6 +239,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         {/* 8. Products by Category Tabs */}
         <ProductTabs
           products={initialProducts}
+          categories={initialCategories}
           onQuickView={(prod) => setQuickViewProduct(prod)}
           onAddToCart={handleAddToCart}
         />

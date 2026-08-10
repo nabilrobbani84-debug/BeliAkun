@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Bot, Palette, Film, ShieldCheck, Briefcase, Grid } from 'lucide-react';
-import { Product, ProductPackage } from '@/types/store';
+import { Category, Product, ProductPackage } from '@/types/store';
 import { ProductCard } from '@/components/ProductCard';
 import { PageContainer, SectionContainer } from '@/components/patterns/page-container';
 import { SectionHeading } from '@/components/patterns/section-heading';
@@ -10,25 +10,52 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ProductTabsProps {
   products: Product[];
+  categories?: Category[];
   onQuickView: (product: Product) => void;
   onAddToCart: (product: Product, pkg: ProductPackage, quantity: number) => void;
 }
 
 export function ProductTabs({
   products,
+  categories,
   onQuickView,
   onAddToCart,
 }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState<string>('all');
 
-  const tabOptions = [
-    { id: 'all', label: 'Semua Produk', icon: <Grid className="w-4 h-4" /> },
-    { id: 'ai', label: 'AI Premium', icon: <Bot className="w-4 h-4" /> },
-    { id: 'design', label: 'Design & Edit', icon: <Palette className="w-4 h-4" /> },
-    { id: 'entertainment', label: 'Entertainment', icon: <Film className="w-4 h-4" /> },
-    { id: 'vpn', label: 'VPN & Security', icon: <ShieldCheck className="w-4 h-4" /> },
-    { id: 'productivity', label: 'Produktivitas', icon: <Briefcase className="w-4 h-4" /> },
-  ];
+  const tabOptions = useMemo(() => {
+    const baseTabs = [
+      { id: 'all', label: 'Semua Produk', icon: <Grid className="w-4 h-4" /> }
+    ];
+
+    if (categories && categories.length > 0) {
+      const mappedDbTabs = categories.map((cat) => {
+        let iconEl = <Grid className="w-4 h-4" />;
+        const slug = cat.slug.toLowerCase();
+        if (slug.includes('ai')) iconEl = <Bot className="w-4 h-4" />;
+        else if (slug.includes('design') || slug.includes('desain') || slug.includes('edit')) iconEl = <Palette className="w-4 h-4" />;
+        else if (slug.includes('entertainment')) iconEl = <Film className="w-4 h-4" />;
+        else if (slug.includes('vpn') || slug.includes('security') || slug.includes('keamanan')) iconEl = <ShieldCheck className="w-4 h-4" />;
+        else if (slug.includes('productivity') || slug.includes('produktivitas')) iconEl = <Briefcase className="w-4 h-4" />;
+
+        return {
+          id: cat.id,
+          label: cat.name,
+          icon: iconEl
+        };
+      });
+      return [...baseTabs, ...mappedDbTabs];
+    }
+
+    return [
+      ...baseTabs,
+      { id: 'ai', label: 'AI Premium', icon: <Bot className="w-4 h-4" /> },
+      { id: 'design', label: 'Design dan Edit', icon: <Palette className="w-4 h-4" /> },
+      { id: 'entertainment', label: 'Entertainment', icon: <Film className="w-4 h-4" /> },
+      { id: 'vpn', label: 'VPN dan Security', icon: <ShieldCheck className="w-4 h-4" /> },
+      { id: 'productivity', label: 'Produktivitas', icon: <Briefcase className="w-4 h-4" /> },
+    ];
+  }, [categories]);
 
   const filteredProducts = useMemo(() => {
     if (activeTab === 'all') return products;
