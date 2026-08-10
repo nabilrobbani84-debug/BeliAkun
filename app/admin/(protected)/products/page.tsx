@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { PlusCircle, Search, Edit2, Eye, AlertCircle, HelpCircle } from 'lucide-react'
+import { PlusCircle, Search, Edit2, Eye, AlertCircle } from 'lucide-react'
+import { CATEGORIES } from '@/data/mockData'
 
 export const revalidate = 0
 
@@ -13,6 +14,13 @@ function formatRupiah(amount: number) {
   }).format(amount)
 }
 
+// Kategori fallback dari mockData jika Supabase masih kosong
+const FALLBACK_CATEGORIES = CATEGORIES.map((cat) => ({
+  id: cat.slug,
+  name: cat.name,
+  slug: cat.slug,
+}))
+
 export default async function ProductsPage(props: {
   searchParams: Promise<{ q?: string; category?: string; status?: string }>
 }) {
@@ -24,10 +32,15 @@ export default async function ProductsPage(props: {
   const supabase = await createClient()
 
   // 1. Fetch categories for filter dropdown
-  const { data: categories } = await supabase
+  const { data: dbCategories } = await supabase
     .from('categories')
     .select('id, name')
     .order('sort_order', { ascending: true })
+
+  // Gunakan data dari Supabase bila ada, fallback ke mockData bila kosong
+  const categories = (dbCategories && dbCategories.length > 0)
+    ? dbCategories
+    : FALLBACK_CATEGORIES
 
   // 2. Fetch products with category details and variant prices
   let query = supabase
