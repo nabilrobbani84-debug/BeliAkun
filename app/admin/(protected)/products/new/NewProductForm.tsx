@@ -119,6 +119,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Nama Produk</label>
               <input
+                suppressHydrationWarning
                 type="text"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
@@ -130,6 +131,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Slug</label>
               <input
+                suppressHydrationWarning
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
@@ -144,6 +146,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Kategori</label>
               <select
+                suppressHydrationWarning
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl border-2 border-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-sm"
@@ -158,6 +161,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Badge</label>
               <select
+                suppressHydrationWarning
                 value={badge}
                 onChange={(e) => setBadge(e.target.value as any)}
                 className="w-full px-4 py-2.5 rounded-xl border-2 border-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-sm"
@@ -174,6 +178,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           <div className="space-y-1">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Deskripsi Singkat (Tampil di Grid)</label>
             <input
+              suppressHydrationWarning
               type="text"
               value={shortDescription}
               onChange={(e) => setShortDescription(e.target.value)}
@@ -185,6 +190,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           <div className="space-y-1">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Deskripsi Lengkap (Detail Halaman)</label>
             <textarea
+              suppressHydrationWarning
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -197,8 +203,9 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         {/* Section 2: Fitur Dinamis */}
         <div className="cartoon-card p-6 bg-white border-3 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_#0F172A] space-y-4">
           <div className="flex justify-between items-center border-b-2 border-slate-100 pb-2">
-            <h2 className="font-black text-lg text-slate-950">2. Fitur & Keunggulan</h2>
+            <h2 className="font-black text-lg text-slate-950">2. Fitur &amp; Keunggulan</h2>
             <button
+              suppressHydrationWarning
               type="button"
               onClick={handleAddFeature}
               className="inline-flex items-center gap-1.5 py-1 px-3 rounded-lg border-2 border-slate-900 bg-slate-100 font-bold text-xs"
@@ -211,6 +218,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             {features.map((feat, idx) => (
               <div key={idx} className="flex gap-2 items-center">
                 <input
+                  suppressHydrationWarning
                   type="text"
                   value={feat}
                   onChange={(e) => handleFeatureChange(idx, e.target.value)}
@@ -219,6 +227,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
                 />
                 {features.length > 1 && (
                   <button
+                    suppressHydrationWarning
                     type="button"
                     onClick={() => handleRemoveFeature(idx)}
                     className="p-2 border-2 border-red-950 bg-red-50 text-red-700 rounded-xl"
@@ -233,7 +242,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
 
         {/* Section 3: Garansi & Pengiriman */}
         <div className="cartoon-card p-6 bg-white border-3 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_#0F172A] space-y-4">
-          <h2 className="font-black text-lg border-b-2 border-slate-100 pb-2 text-slate-950">3. Pengiriman & Garansi</h2>
+          <h2 className="font-black text-lg border-b-2 border-slate-100 pb-2 text-slate-950">3. Pengiriman &amp; Garansi</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-3">
@@ -241,6 +250,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 font-bold text-sm cursor-pointer">
                   <input
+                    suppressHydrationWarning
                     type="radio"
                     name="deliveryMethod"
                     value="manual"
@@ -252,6 +262,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
                 </label>
                 <label className="flex items-center gap-2 font-bold text-sm cursor-pointer">
                   <input
+                    suppressHydrationWarning
                     type="radio"
                     name="deliveryMethod"
                     value="instant"
@@ -268,6 +279,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               <label className="text-xs font-black uppercase tracking-wider text-slate-700 block">Status Garansi</label>
               <label className="flex items-center gap-2 font-bold text-sm cursor-pointer">
                 <input
+                  suppressHydrationWarning
                   type="checkbox"
                   checked={warrantyEnabled}
                   onChange={(e) => setWarrantyEnabled(e.target.checked)}
@@ -283,6 +295,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase text-slate-600">Durasi Garansi</label>
                 <input
+                  suppressHydrationWarning
                   type="number"
                   value={warrantyDuration || ''}
                   onChange={(e) => setWarrantyDuration(parseInt(e.target.value) || null)}
@@ -293,6 +306,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase text-slate-600">Satuan Durasi</label>
                 <select
+                  suppressHydrationWarning
                   value={warrantyUnit || 'day'}
                   onChange={(e) => setWarrantyUnit(e.target.value as any)}
                   className="w-full px-3 py-2 rounded-lg border-2 border-slate-900 font-bold text-xs"
@@ -309,6 +323,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase text-slate-600">Label Garansi (UI)</label>
                 <input
+                  suppressHydrationWarning
                   type="text"
                   value={warrantyLabel}
                   onChange={(e) => setWarrantyLabel(e.target.value)}
@@ -321,12 +336,13 @@ export default function NewProductForm({ categories }: { categories: Category[] 
 
         {/* Section 4: Status Katalog */}
         <div className="cartoon-card p-6 bg-white border-3 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_#0F172A] space-y-4">
-          <h2 className="font-black text-lg border-b-2 border-slate-100 pb-2 text-slate-950">4. Publikasi & Urutan</h2>
+          <h2 className="font-black text-lg border-b-2 border-slate-100 pb-2 text-slate-950">4. Publikasi &amp; Urutan</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Status</label>
               <select
+                suppressHydrationWarning
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
                 className="w-full px-4 py-2.5 rounded-xl border-2 border-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-sm"
@@ -341,6 +357,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Urutan Tampil</label>
               <input
+                suppressHydrationWarning
                 type="number"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
@@ -357,6 +374,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
               Batal
             </Link>
             <button
+              suppressHydrationWarning
               type="submit"
               disabled={isSubmitting}
               className="inline-flex items-center gap-2 py-2.5 px-5 rounded-xl bg-blue-600 text-white font-black border-2 border-slate-900 shadow-[3px_3px_0px_0px_#000] hover:bg-blue-700 transition-all text-xs disabled:opacity-50"
