@@ -1,4 +1,4 @@
--- Migration 0007: Warranty System, Monitoring, and Hardening
+-- Migration 0007: Warranty System, Monitoring, and Hardening (Idempotent)
 
 -- 1. Create Enums
 DO $$ 
@@ -75,10 +75,12 @@ CREATE TABLE IF NOT EXISTS public.rate_limits (
 CREATE INDEX IF NOT EXISTS idx_rate_limits_endpoint ON public.rate_limits(endpoint);
 
 -- 6. Updated_at Triggers
+DROP TRIGGER IF EXISTS update_warranties_updated_at ON public.warranties;
 CREATE TRIGGER update_warranties_updated_at
 BEFORE UPDATE ON public.warranties
 FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS update_warranty_claims_updated_at ON public.warranty_claims;
 CREATE TRIGGER update_warranty_claims_updated_at
 BEFORE UPDATE ON public.warranty_claims
 FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
@@ -90,30 +92,31 @@ ALTER TABLE public.warranty_replacements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rate_limits ENABLE ROW LEVEL SECURITY;
 
 -- Admins can do everything
+DROP POLICY IF EXISTS "Admins can manage warranties" ON public.warranties;
 CREATE POLICY "Admins can manage warranties" ON public.warranties FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admins can manage warranty claims" ON public.warranty_claims;
 CREATE POLICY "Admins can manage warranty claims" ON public.warranty_claims FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admins can manage warranty replacements" ON public.warranty_replacements;
 CREATE POLICY "Admins can manage warranty replacements" ON public.warranty_replacements FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admins can manage rate limits" ON public.rate_limits;
 CREATE POLICY "Admins can manage rate limits" ON public.rate_limits FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 
--- Guests logic handled via Service Role / Backend endpoints
-
 -- 8. Trigger to Auto-Create Warranty on Fulfillment
--- Modify fulfillments table to trigger warranty creation if it's completed
 CREATE OR REPLACE FUNCTION public.handle_fulfillment_completion()
 RETURNS TRIGGER AS $$
 DECLARE
     v_order_item RECORD;
-    v_duration_days INTEGER := 30; -- Default warranty 30 days
+    v_duration_days INTEGER := 30;
 BEGIN
     IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-        -- Get order item duration info if exists, else default 30 days
-        -- Simplified logic: assume 30 days for now, this can be enhanced based on product attributes
         SELECT * INTO v_order_item 
         FROM public.order_items 
         WHERE order_id = NEW.order_id 
         LIMIT 1;
 
-        -- We only insert if not exists
         IF NOT EXISTS (SELECT 1 FROM public.warranties WHERE order_item_id = v_order_item.id) THEN
             INSERT INTO public.warranties (order_id, order_item_id, status, valid_until, terms)
             VALUES (
