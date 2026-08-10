@@ -91,6 +91,7 @@ export default async function ProductsPage(props: {
             defaultValue={q}
             placeholder="Cari nama produk..."
             className="w-full pl-10 pr-4 py-2 rounded-xl border-2 border-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs bg-slate-50"
+            suppressHydrationWarning
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
         </form>
@@ -103,6 +104,7 @@ export default async function ProductsPage(props: {
             name="category"
             defaultValue={categoryFilter}
             className="flex-1 lg:flex-initial px-3 py-2 rounded-xl border-2 border-slate-900 font-bold text-xs bg-white focus:outline-none"
+            suppressHydrationWarning
           >
             <option value="">Semua Kategori</option>
             {categories?.map((cat) => (
@@ -116,6 +118,7 @@ export default async function ProductsPage(props: {
             name="status"
             defaultValue={statusFilter}
             className="flex-1 lg:flex-initial px-3 py-2 rounded-xl border-2 border-slate-900 font-bold text-xs bg-white focus:outline-none"
+            suppressHydrationWarning
           >
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
@@ -127,6 +130,7 @@ export default async function ProductsPage(props: {
           <button
             type="submit"
             className="px-4 py-2 rounded-xl border-2 border-slate-900 bg-slate-950 text-white font-bold text-xs shadow-[2px_2px_0px_0px_#000] hover:bg-slate-800 transition-all"
+            suppressHydrationWarning
           >
             Filter
           </button>

@@ -53,6 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-1.5 rounded-lg border-2 border-slate-900 bg-slate-100"
+          suppressHydrationWarning
         >
           {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -119,6 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 border-red-900 bg-red-50 hover:bg-red-100 font-bold text-xs text-red-700 transition-all"
+            suppressHydrationWarning
           >
             <LogOut className="w-4 h-4" />
             Keluar Panel
