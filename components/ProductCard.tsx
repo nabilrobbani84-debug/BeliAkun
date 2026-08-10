@@ -123,7 +123,7 @@ export function ProductCard({
         <div className="flex items-baseline justify-between gap-1">
           <div>
             <span className="block font-black text-sm sm:text-base text-blue-600 dark:text-blue-400 leading-none">
-              Rp{selectedPackage?.price.toLocaleString('id-ID')}
+              {selectedPackage ? `Rp${selectedPackage.price.toLocaleString('id-ID')}` : 'Hubungi Admin'}
             </span>
             {selectedPackage?.originalPrice && (
               <span className="text-[10px] font-bold text-[var(--muted-foreground)] line-through">
@@ -132,9 +132,11 @@ export function ProductCard({
             )}
           </div>
 
-          <span className="text-[10px] font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-700 shrink-0">
-            {selectedPackage?.type}
-          </span>
+          {selectedPackage && (
+            <span className="text-[10px] font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-700 shrink-0">
+              {selectedPackage.type}
+            </span>
+          )}
         </div>
 
         {/* Direct Buy Action Buttons */}

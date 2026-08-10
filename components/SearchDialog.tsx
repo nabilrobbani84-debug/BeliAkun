@@ -94,8 +94,9 @@ export function SearchDialog({
           ) : (
             filteredProducts.map((prod) => {
               const defaultPkg =
-                prod.packages.find((p) => p.id === prod.defaultPackageId) ||
-                prod.packages[0];
+                prod.packages && prod.packages.length > 0
+                  ? prod.packages.find((p) => p.id === prod.defaultPackageId) || prod.packages[0]
+                  : undefined;
               return (
                 <Card
                   key={prod.id}
@@ -122,10 +123,10 @@ export function SearchDialog({
 
                   <div className="text-right shrink-0">
                     <span className="block font-extrabold text-xs sm:text-sm text-blue-600 dark:text-blue-400">
-                      Mulai Rp{defaultPkg.price.toLocaleString('id-ID')}
+                      {defaultPkg ? `Mulai Rp${defaultPkg.price.toLocaleString('id-ID')}` : 'Hubungi Admin'}
                     </span>
                     <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--muted-foreground)] mt-0.5">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-500" /> {prod.rating}
+                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" /> {prod.rating}
                     </span>
                   </div>
                 </Card>
