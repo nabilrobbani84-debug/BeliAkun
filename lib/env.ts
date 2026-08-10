@@ -19,6 +19,11 @@ export const env = {
   KLIKQRIS_WEBHOOK_URL: process.env.KLIKQRIS_WEBHOOK_URL || 'http://localhost:3000/api/webhooks/klikqris',
   KLIKQRIS_REQUEST_TIMEOUT_MS: parseInt(process.env.KLIKQRIS_REQUEST_TIMEOUT_MS || '10000', 10),
   PAYMENT_STATUS_SYNC_INTERVAL_SECONDS: parseInt(process.env.PAYMENT_STATUS_SYNC_INTERVAL_SECONDS || '15', 10),
+
+  // Mail & Cron
+  CLOUDFLARE_WORKER_MAIL_URL: process.env.CLOUDFLARE_WORKER_MAIL_URL,
+  CLOUDFLARE_WORKER_MAIL_SECRET: process.env.CLOUDFLARE_WORKER_MAIL_SECRET,
+  CRON_SECRET: process.env.CRON_SECRET || 'dev-secret-token',
 } as const;
 
 export function validateEnv() {

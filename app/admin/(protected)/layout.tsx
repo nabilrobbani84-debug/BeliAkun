@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  ShieldAlert,
   Store,
   ShoppingCart,
 } from 'lucide-react'
@@ -32,7 +33,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Pesanan', href: '/admin/orders', icon: ShoppingCart },
-    { name: 'Produk', href: '/admin/products', icon: Package },
+    { name: 'Pengiriman', href: '/admin/fulfillments', icon: Package },
+    { name: 'Garansi & Klaim', href: '/admin/warranties', icon: ShieldAlert },
+    { name: 'Produk', href: '/admin/products', icon: Store },
     { name: 'Kategori', href: '/admin/categories', icon: FolderTree },
     { name: 'Stok', href: '/admin/stock', icon: ShieldCheck },
   ]

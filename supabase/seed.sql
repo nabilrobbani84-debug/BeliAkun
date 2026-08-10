@@ -5,7 +5,11 @@ INSERT INTO categories (id, name, slug, description, status, sort_order) VALUES
 ('11111111-1111-1111-1111-111111111111', 'ChatGPT', 'chatgpt', 'Layanan OpenAI ChatGPT', 'active', 1),
 ('22222222-2222-2222-2222-222222222222', 'Gemini', 'gemini', 'Layanan Google Gemini', 'active', 2),
 ('33333333-3333-3333-3333-333333333333', 'Claude', 'claude', 'Layanan Anthropic Claude', 'active', 3),
-('44444444-4444-4444-4444-444444444444', 'CapCut', 'capcut', 'Aplikasi edit video CapCut', 'active', 4)
+('44444444-4444-4444-4444-444444444444', 'CapCut', 'capcut', 'Aplikasi edit video CapCut', 'active', 4),
+('55555555-5555-5555-5555-555555555555', 'AI Premium', 'ai-premium', 'Aplikasi AI Premium Helper', 'active', 5),
+('66666666-6666-6666-6666-666666666666', 'Design dan Edit', 'design-dan-edit', 'Alat Desain dan Editing', 'active', 6),
+('77777777-7777-7777-7777-777777777777', 'Entertainment', 'entertainment', 'Layanan Hiburan Streaming', 'active', 7),
+('88888888-8888-8888-8888-888888888888', 'VPN dan Security', 'vpn-dan-security', 'VPN dan Keamanan Internet', 'active', 8)
 ON CONFLICT (slug) DO NOTHING;
 
 -- Insert Products

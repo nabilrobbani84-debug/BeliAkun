@@ -23,7 +23,7 @@ export async function adminProcessFulfillment(
     if (fulfillment?.orders) {
       const order: any = Array.isArray(fulfillment.orders) ? fulfillment.orders[0] : fulfillment.orders;
       if (order) {
-        const orderUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pesanan/${order.order_number}`;
+        const orderUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/pesanan/${order.order_number}`;
       
       const emailHtml = `
         <h2>Pesanan Anda Telah Dikirim!</h2>

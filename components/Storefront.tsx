@@ -66,6 +66,48 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // Check Supabase session & URL search params for OAuth redirect
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const { createClient } = await import('@/lib/supabase/client');
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Sobat Beliakun';
+          setUserName(name);
+
+          // Check query params for login success
+          const searchParams = new URLSearchParams(window.location.search);
+          if (searchParams.get('login') === 'success') {
+            addToast(
+              'Login Google Berhasil! 📬',
+              `Selamat datang, ${name}. Notifikasi aktivitas masuk telah dikirimkan ke email Anda (${user.email}).`,
+              'success'
+            );
+            // Clear search params cleanly
+            window.history.replaceState({}, '', window.location.pathname);
+          }
+        } else {
+          const searchParams = new URLSearchParams(window.location.search);
+          if (searchParams.get('auth_error')) {
+            addToast(
+              'Gagal Login',
+              'Tidak dapat mengotentikasi akun Google Anda. Silakan coba lagi.',
+              'error'
+            );
+            window.history.replaceState({}, '', window.location.pathname);
+          }
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      }
+    }
+
+    checkSession();
+  }, []);
+
   // Cart Operations (Step 4: Direct to Checkout)
   const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
     // Step 4: Skip cart and go directly to checkout

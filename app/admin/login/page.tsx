@@ -78,6 +78,7 @@ export default function AdminLoginPage() {
           <div className="space-y-1">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Email Admin</label>
             <input
+              suppressHydrationWarning
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -91,6 +92,7 @@ export default function AdminLoginPage() {
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700">Password</label>
             <div className="relative">
               <input
+                suppressHydrationWarning
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -99,6 +101,7 @@ export default function AdminLoginPage() {
                 placeholder="••••••••"
               />
               <button
+                suppressHydrationWarning
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-900"
@@ -109,6 +112,7 @@ export default function AdminLoginPage() {
           </div>
 
           <button
+            suppressHydrationWarning
             type="submit"
             disabled={isLoading}
             className="w-full py-3 px-4 rounded-xl bg-blue-600 text-white font-black border-2 border-slate-900 shadow-[3px_3px_0px_0px_#000] hover:bg-blue-700 transition-all disabled:opacity-50"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { env } from '@/lib/env';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getPaymentByOrderId, recordPaymentEvent, isEventFingerprintProcessed, settlePaidPaymentRPC, settleExpiredPaymentRPC, updatePaymentRecord } from '@/lib/data/payments';
+import { triggerAutoFulfillment } from '@/lib/data/fulfillments';
 import { getPaymentProvider } from '@/lib/payments/provider';
 import { hashSignature, verifySignatureHash } from '@/lib/payments/klikqris/signature';
 import { revalidatePath } from 'next/cache';
@@ -219,6 +220,12 @@ export async function POST(req: NextRequest) {
       // Atomic settlement
       const settled = await settlePaidPaymentRPC(payment.id, eventFingerprint);
       
+      if (settled) {
+        // Trigger auto-fulfillment if applicable (async)
+        // Wait, actually I imported triggerAutoFulfillment
+        await triggerAutoFulfillment(order.id).catch(e => console.error('Auto fulfillment error:', e));
+      }
+
       await recordPaymentEvent({
         paymentId: payment.id,
         orderId: order.id,
@@ -233,6 +240,8 @@ export async function POST(req: NextRequest) {
       });
 
       revalidatePath(`/pesanan/${order.order_number}`);
+      revalidatePath(`/admin/orders/${order.id}`);
+      revalidatePath(`/admin/fulfillments`);
       
     } else if (parsedEvent.status === 'expired') {
       const settled = await settleExpiredPaymentRPC(payment.id);

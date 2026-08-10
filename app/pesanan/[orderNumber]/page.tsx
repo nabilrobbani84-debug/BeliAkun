@@ -4,9 +4,12 @@ import { getGuestOrderByAccessToken } from '@/lib/data/orders';
 import { getPaymentByOrderId } from '@/lib/data/payments';
 import { hashOrderAccessToken } from '@/lib/security/order-access-token';
 import { env } from '@/lib/env';
-import { ShieldCheck, Clock, CheckCircle2, XCircle, FileText, ArrowLeft, Package, HelpCircle } from 'lucide-react';
+import { ShieldCheck, Clock, CheckCircle2, XCircle, FileText, ArrowLeft, Package, HelpCircle, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { PaymentClient } from './PaymentClient';
+import { getFulfillmentByOrderId } from '@/lib/data/fulfillments';
+import { getWarrantyByOrderId } from '@/lib/data/warranties';
+import { WarrantyClaimClient } from './WarrantyClaimClient';
 
 export const metadata = {
   title: 'Status Pesanan - Beliakun.com',
@@ -71,10 +74,20 @@ export default async function OrderStatusPage({ params }: { params: Promise<{ or
 
   const item = order.order_items[0];
   const isPending = order.status === 'pending_payment';
-  const isPaid = order.status === 'paid';
+  const isPaid = order.status === 'paid' || order.status === 'completed';
   const isExpired = order.status === 'expired' || order.status === 'cancelled';
   const isReview = order.status === 'payment_review';
   
+  // Fetch fulfillment and warranty if paid
+  let fulfillment = null;
+  let warranty = null;
+  if (isPaid || order.status === 'processing' || order.status === 'delivered') {
+    fulfillment = await getFulfillmentByOrderId(order.id);
+    warranty = await getWarrantyByOrderId(order.id);
+  }
+  
+  const fulfillmentItem = fulfillment?.fulfillment_items?.[0];
+
   // Mask email
   const emailParts = order.recipient_email.split('@');
   const maskedEmail = emailParts[0].length > 2 
@@ -121,11 +134,39 @@ export default async function OrderStatusPage({ params }: { params: Promise<{ or
                 ? 'Pesanan Dibatalkan/Expired' 
                 : isReview 
                   ? 'Pembayaran Sedang Diperiksa' 
-                  : 'Pembayaran Berhasil'}
+                  : 'Pesanan Berhasil'}
           </h1>
           <p className="text-slate-600 font-medium mb-1">Nomor Pesanan: <span className="font-bold text-slate-900">{order.order_number}</span></p>
           <p className="text-slate-500 text-sm">Dikirim ke: {maskedEmail}</p>
         </div>
+
+        {/* Warranty System */}
+        {warranty && (
+          <WarrantyClaimClient warranty={warranty} orderNumber={orderNumber} />
+        )}
+
+        {/* Credential Data (If Available) */}
+        {fulfillmentItem && (
+          <div className="bg-emerald-50 rounded-2xl border-2 border-emerald-200 overflow-hidden shadow-sm">
+            <div className="bg-emerald-100 p-4 sm:p-5 border-b-2 border-emerald-200 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-emerald-700" />
+              <h3 className="font-bold text-lg text-emerald-900">Kredensial Produk Anda</h3>
+            </div>
+            <div className="p-4 sm:p-5 space-y-4">
+              <p className="text-sm font-medium text-emerald-800">
+                Berikut adalah detail akses untuk produk Anda. Simpan informasi ini dengan baik.
+              </p>
+              <div className="bg-slate-900 rounded-xl p-4 overflow-auto">
+                <pre className="text-emerald-400 font-mono text-sm whitespace-pre-wrap">
+                  {JSON.stringify(fulfillmentItem.credential_snapshot, null, 2)}
+                </pre>
+              </div>
+              <p className="text-xs text-emerald-700 font-bold bg-emerald-200/50 p-3 rounded-lg border border-emerald-200">
+                ⚠️ Jangan bagikan kredensial ini kepada siapapun termasuk pihak Beliakun.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* QRIS / Payment Widget */}
         <PaymentClient 

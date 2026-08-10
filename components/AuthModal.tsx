@@ -49,8 +49,7 @@ export function AuthModal({
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${origin}/auth/callback`,
@@ -60,27 +59,15 @@ export function AuthModal({
       if (error) {
         throw error;
       }
-
-      if (data?.url) {
-        window.location.href = data.url;
-        return;
-      }
     } catch (err: any) {
-      console.warn('Google login real OAuth fallback simulation:', err);
-      setTimeout(() => {
-        setIsLoggingInGoogle(false);
-        const googleUserEmail = email || 'user.google@gmail.com';
-        const googleName = name || 'User Google';
-        onSuccessLogin(googleName, true, googleUserEmail);
-        if (addToast) {
-          addToast(
-            'Login Google Berhasil! 📬',
-            `Notifikasi keamanan & aktivitas masuk telah dikirimkan ke Google Email (${googleUserEmail}).`,
-            'success'
-          );
-        }
-        onClose();
-      }, 1200);
+      setIsLoggingInGoogle(false);
+      if (addToast) {
+        addToast(
+          'Gagal Login Google',
+          err?.message || 'Terjadi kesalahan saat mengarahkan ke Google Login. Silakan coba lagi.',
+          'error'
+        );
+      }
     }
   };
 
