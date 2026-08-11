@@ -104,19 +104,25 @@ CREATE POLICY "Admins can manage warranty replacements" ON public.warranty_repla
 DROP POLICY IF EXISTS "Admins can manage rate limits" ON public.rate_limits;
 CREATE POLICY "Admins can manage rate limits" ON public.rate_limits FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 
+-- Guests logic handled via Service Role / Backend endpoints
+
 -- 8. Trigger to Auto-Create Warranty on Fulfillment
+-- Modify fulfillments table to trigger warranty creation if it's completed
 CREATE OR REPLACE FUNCTION public.handle_fulfillment_completion()
 RETURNS TRIGGER AS $$
 DECLARE
     v_order_item RECORD;
-    v_duration_days INTEGER := 30;
+    v_duration_days INTEGER := 30; -- Default warranty 30 days
 BEGIN
     IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
+        -- Get order item duration info if exists, else default 30 days
+        -- Simplified logic: assume 30 days for now, this can be enhanced based on product attributes
         SELECT * INTO v_order_item 
         FROM public.order_items 
         WHERE order_id = NEW.order_id 
         LIMIT 1;
 
+        -- We only insert if not exists
         IF NOT EXISTS (SELECT 1 FROM public.warranties WHERE order_item_id = v_order_item.id) THEN
             INSERT INTO public.warranties (order_id, order_item_id, status, valid_until, terms)
             VALUES (
