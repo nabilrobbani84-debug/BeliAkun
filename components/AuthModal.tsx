@@ -76,10 +76,21 @@ export function AuthModal({
         
         if (error) throw error;
         
-        if (addToast) {
-          addToast('Pendaftaran Berhasil', 'Akun Anda berhasil dibuat. Silakan masuk (login).', 'success');
+        // Auto login setelah sukses register
+        const { error: signInError, data: signInData } = await supabase.auth.signInWithPassword({ email, password });
+        
+        if (!signInError && signInData.session) {
+          if (addToast) {
+            addToast('Pendaftaran Berhasil', 'Akun Anda berhasil dibuat dan Anda langsung masuk.', 'success');
+          }
+          onSuccessLogin(finalName, false);
+          onClose();
+        } else {
+          if (addToast) {
+            addToast('Pendaftaran Berhasil', 'Akun Anda berhasil dibuat. Silakan login.', 'success');
+          }
+          setView('login');
         }
-        setView('login');
       }
     } catch (err: any) {
       if (addToast) {
