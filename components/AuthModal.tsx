@@ -36,11 +36,58 @@ export function AuthModal({
     }
   }, [isOpen, initialMode]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoggingInEmail, setIsLoggingInEmail] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalName = name.trim() || email.split('@')[0] || 'Sobat Beliakun';
-    onSuccessLogin(finalName, false);
-    onClose();
+    setIsLoggingInEmail(true);
+    
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      
+      if (view === 'login') {
+        const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        
+        // Cek apakah admin
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (profile && (profile.role === 'admin' || profile.role === 'super_admin')) {
+          // Hard redirect agar berpindah ke layout backend
+          window.location.href = '/admin';
+          return;
+        }
+
+        const finalName = data.user.user_metadata?.full_name || data.user.user_metadata?.name || email.split('@')[0] || 'Sobat Beliakun';
+        onSuccessLogin(finalName, false);
+        onClose();
+      } else if (view === 'register') {
+        const finalName = name.trim() || 'Sobat Beliakun';
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { name: finalName, full_name: finalName } }
+        });
+        
+        if (error) throw error;
+        
+        if (addToast) {
+          addToast('Pendaftaran Berhasil', 'Akun Anda berhasil dibuat. Silakan masuk (login).', 'success');
+        }
+        setView('login');
+      }
+    } catch (err: any) {
+      if (addToast) {
+        addToast('Gagal', err.message || 'Terjadi kesalahan saat memproses permintaan.', 'error');
+      }
+    } finally {
+      setIsLoggingInEmail(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -195,14 +242,24 @@ export function AuthModal({
                 leftIcon={<Lock className="w-4 h-4" />}
               />
             </Field>
-
             <Button
+              suppressHydrationWarning
               type="submit"
               variant="primary"
+              disabled={isLoggingInEmail}
               className="w-full py-3 text-xs sm:text-sm flex items-center justify-center gap-2 mt-2 min-h-[44px]"
             >
-              <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
-              {view === 'register' ? 'Daftar Sekarang' : 'Masuk Akun'}
+              {isLoggingInEmail ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                  Memproses...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
+                  {view === 'register' ? 'Daftar Sekarang' : 'Masuk Akun'}
+                </>
+              )}
             </Button>
 
             <div className="text-center pt-2">
