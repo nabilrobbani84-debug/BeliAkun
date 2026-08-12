@@ -79,6 +79,18 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
           const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Sobat Beliakun';
           setUserName(name);
 
+          // Check if user is admin
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+          if (profile && (profile.role === 'admin' || profile.role === 'super_admin')) {
+            router.push('/admin');
+            return;
+          }
+
           // Check query params for login success
           const searchParams = new URLSearchParams(window.location.search);
           if (searchParams.get('login') === 'success') {
