@@ -35,10 +35,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={currentType}
           className={cn(
             "flex w-full rounded-xl border-2 border-[var(--border)] bg-[var(--input)] text-[var(--foreground)] font-semibold placeholder:text-[var(--muted-foreground)] transition-[border-color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
+            sizeClasses[inputSize],
             leftIcon && "pl-10",
             (rightIcon || isPassword || onClear) && "pr-10",
             invalid && "border-rose-500 ring-rose-500",
-            sizeClasses[inputSize],
             className
           )}
           ref={ref}
