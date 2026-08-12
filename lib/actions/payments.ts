@@ -37,6 +37,7 @@ export interface InitPaymentResult {
   amountPayable?: number;
   uniqueAmount?: number;
   expiresAt?: string;
+  signature?: string;
   error?: string;
 }
 
@@ -174,6 +175,7 @@ export async function initializeKlikQrisPayment(orderId: string): Promise<InitPa
       amountPayable: createRes.amountPayable,
       uniqueAmount: createRes.uniqueAmount,
       expiresAt: createRes.expiresAt,
+      signature: createRes.signature,
     };
   } catch (error: any) {
     console.error('Inisialisasi pembayaran gagal:', error);

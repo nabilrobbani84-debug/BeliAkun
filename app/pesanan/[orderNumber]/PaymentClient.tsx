@@ -41,6 +41,7 @@ export function PaymentClient({ order, initialPayment, checkoutEnabled, klikqris
           amount_payable: res.amountPayable,
           unique_amount: res.uniqueAmount,
           provider_expires_at: res.expiresAt,
+          signature: res.signature,
           status: 'pending'
         });
       } else {
@@ -141,6 +142,22 @@ export function PaymentClient({ order, initialPayment, checkoutEnabled, klikqris
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPending, payment]);
+
+  // 3. Load Snap Payment Script if signature exists
+  useEffect(() => {
+    if (payment?.signature) {
+      const script = document.createElement('script');
+      script.src = "https://klikqris.com/js/payment-snap.js?t=" + new Date().getTime();
+      script.async = true;
+      document.body.appendChild(script);
+
+      return () => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
+  }, [payment?.signature]);
 
 
   const handleManualSync = async () => {
@@ -345,6 +362,16 @@ export function PaymentClient({ order, initialPayment, checkoutEnabled, klikqris
         </div>
 
         <div className="border-t border-slate-100 pt-4 space-y-2">
+          {payment.signature && (
+            <button
+              id="btnPay"
+              data-signature={payment.signature}
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2 rounded-xl transition-colors shadow-sm"
+            >
+              Bayar dengan KlikQRIS (Otomatis)
+            </button>
+          )}
+
           <Button
             onClick={handleManualSync}
             disabled={syncing}
