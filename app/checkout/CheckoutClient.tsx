@@ -10,12 +10,13 @@ interface CheckoutClientProps {
   variant: any;
   product: any;
   checkoutEnabled: boolean;
+  userEmail?: string;
 }
 
-export function CheckoutClient({ variant, product, checkoutEnabled }: CheckoutClientProps) {
+export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }: CheckoutClientProps) {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
+  const [email, setEmail] = useState(userEmail || '');
+  const [confirmEmail, setConfirmEmail] = useState(userEmail || '');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');

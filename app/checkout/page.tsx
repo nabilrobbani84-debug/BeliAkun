@@ -34,6 +34,11 @@ export default async function CheckoutPage({
 
   const supabase = await createClient();
   
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect('/?auth_error=Silakan+login+terlebih+dahulu+untuk+membeli');
+  }
+  
   // Ambil data variant & product
   // Supabase public client bisa baca karena product active (RLS allow for active products)
   const { data: variant, error: variantError } = await supabase
@@ -97,6 +102,7 @@ export default async function CheckoutPage({
       variant={variantData}
       product={productData}
       checkoutEnabled={env.CHECKOUT_ENABLED}
+      userEmail={user.email}
     />
   );
 }

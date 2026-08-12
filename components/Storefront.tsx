@@ -44,6 +44,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [userName, setUserName] = useState<string>('');
+  const [pendingCheckoutPkg, setPendingCheckoutPkg] = useState<ProductPackage | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
@@ -110,6 +111,12 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
 
   // Cart Operations (Step 4: Direct to Checkout)
   const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
+    if (!userName) {
+      addToast('Akses Ditolak', 'Silakan masuk ke akun Anda terlebih dahulu untuk melakukan pembelian.', 'info');
+      setPendingCheckoutPkg(pkg);
+      setIsAuthOpen(true);
+      return;
+    }
     // Step 4: Skip cart and go directly to checkout
     router.push(`/checkout?variant=${pkg.id}`);
   };
@@ -290,6 +297,10 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         onSuccessLogin={(name) => {
           setUserName(name);
           addToast('Halo Selamat Datang!', `Berhasil masuk sebagai ${name}.`);
+          if (pendingCheckoutPkg) {
+            router.push(`/checkout?variant=${pendingCheckoutPkg.id}`);
+            setPendingCheckoutPkg(null);
+          }
         }}
       />
 
