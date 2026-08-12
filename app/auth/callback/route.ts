@@ -72,7 +72,19 @@ export async function GET(request: Request) {
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`);
+      // Fetch user profile to check role
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      let redirectUrl = `${origin}${next}`;
+      if (profile && (profile.role === 'admin' || profile.role === 'super_admin')) {
+        redirectUrl = `${origin}/admin`;
+      }
+
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
