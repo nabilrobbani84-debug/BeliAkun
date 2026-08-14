@@ -95,8 +95,8 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
           const searchParams = new URLSearchParams(window.location.search);
           if (searchParams.get('login') === 'success') {
             addToast(
-              'Halo Selamat Datang!',
-              `Berhasil masuk sebagai ${name}.`,
+              'Login Google Berhasil! 📬',
+              `Selamat datang, ${name}. Notifikasi aktivitas masuk telah dikirimkan ke email Anda (${user.email}).`,
               'success'
             );
             // Clear search params cleanly
@@ -129,8 +129,23 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
       setIsAuthOpen(true);
       return;
     }
-    // Step 4: Skip cart and go directly to checkout
-    router.push(`/checkout?variant=${pkg.id}`);
+    // Step 4: Add to cart and open CartSheet
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.product.id === product.id && item.selectedPackage.id === pkg.id);
+      if (existing) {
+        return prev.map((item) => 
+          item.id === existing.id ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      }
+      return [...prev, {
+        id: `${product.id}-${pkg.id}-${Date.now()}`,
+        product,
+        selectedPackage: pkg,
+        quantity
+      }];
+    });
+    addToast('Ditambahkan ke Keranjang', `${pkg.name} berhasil ditambahkan.`, 'success');
+    setIsCartOpen(true);
   };
 
   const handleUpdateQuantity = (id: string, newQty: number) => {
@@ -205,6 +220,8 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         onNavigateSection={handleNavigateSection}
         isDarkMode={isDarkMode}
         onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+        onOpenCart={() => setIsCartOpen(true)}
+        cartItemCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
       />
 
       {/* Main Storefront Body Content */}
