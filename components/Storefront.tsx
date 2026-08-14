@@ -95,8 +95,8 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
           const searchParams = new URLSearchParams(window.location.search);
           if (searchParams.get('login') === 'success') {
             addToast(
-              'Login Google Berhasil! 📬',
-              `Selamat datang, ${name}. Notifikasi aktivitas masuk telah dikirimkan ke email Anda (${user.email}).`,
+              'Halo Selamat Datang!',
+              `Berhasil masuk sebagai ${name}.`,
               'success'
             );
             // Clear search params cleanly
