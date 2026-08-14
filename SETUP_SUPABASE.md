@@ -70,8 +70,45 @@ Jalankan file `supabase/migrations/0002_admin_auth_catalog_management.sql` mengg
 3. Buka menu **Authentication** -> **URL Configuration**.
 4. Atur **Site URL** ke URL lokal Anda: `http://localhost:3000`. (Ganti dengan `https://beliakun.com` saat nanti live).
 5. Di bagian **Redirect URLs**, tambahkan URL berikut:
+   - `http://localhost:3000/auth/callback`
    - `http://localhost:3000/**`
+   - `https://beliakun.com/auth/callback`
    - `https://beliakun.com/**`
+
+## G2. Mengaktifkan Google OAuth Provider (Mengatasi Error 400: redirect_uri_mismatch)
+Jika Anda mengalami error **`Error 400: redirect_uri_mismatch`** saat mencoba login dengan Google, ikuti langkah perbaikan berikut:
+
+1. **Ambil Callback URL Supabase:**
+   - Buka **Supabase Dashboard** -> **Authentication** -> **Providers** -> **Google**.
+   - Salin **Callback URL (for OAuth)** (misal: `https://<project-ref>.supabase.co/auth/v1/callback`).
+
+2. **Daftarkan Redirect URI di Google Cloud Console:**
+   - Buka [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials).
+   - Pilih project Google Cloud Anda, lalu klik Client ID OAuth 2.0 yang digunakan (atau buat baru jika belum ada).
+   - Di bagian **Authorized redirect URIs**, klik **+ ADD URI** dan masukkan Callback URL Supabase yang sudah disalin di atas:
+     `https://<project-ref>.supabase.co/auth/v1/callback`
+   - Di bagian **Authorized JavaScript origins**, tambahkan:
+     - `http://localhost:3000`
+     - `https://<project-ref>.supabase.co`
+   - Klik **SAVE**.
+
+3. **Input Credentials ke Supabase:**
+   - Salin **Client ID** dan **Client Secret** dari Google Cloud Console.
+   - Kembali ke **Supabase Dashboard** -> **Authentication** -> **Providers** -> **Google**.
+   - Aktifkan **Enable Google provider**, isi Client ID dan Client Secret, lalu klik **Save**.
+
+4. **Tambahkan User ke Test Users (Jika Client Masih Status Testing):**
+   - Jika status App di Google Cloud Console masih *Testing*, buka **OAuth consent screen** -> **Test users**.
+   - Tambahkan alamat email akun Google Anda (contoh: `nabilrobbani6@gmail.com`).
+
+5. **Mempublikasikan OAuth App ke Status Production:**
+   - Untuk mengizinkan semua pengguna login dengan Google tanpa perlu menambahkan email satu per satu ke Test Users:
+   - Buka [Google Cloud Console - OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent).
+   - Di bawah bagian **Publishing status** (yang saat ini berstatus *Testing*), klik tombol **PUBLISH APP**.
+   - Pada dialog konfirmasi yang muncul ("Publish to production?"), klik **CONFIRM**.
+   - Status aplikasi akan berubah menjadi **In production** dan siap digunakan oleh semua akun Google!
+
+
 
 ## H. Membuat Akun Admin Pertama
 1. Buka menu **Authentication** -> **Users**.

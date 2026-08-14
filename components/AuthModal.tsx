@@ -86,15 +86,27 @@ export function AuthModal({
           onSuccessLogin(finalName, false);
           onClose();
         } else {
+          let fallbackMsg = 'Akun Anda berhasil dibuat. Silakan login.';
+          if (signInError && signInError.message.toLowerCase().includes('email not confirmed')) {
+            fallbackMsg = 'Akun Anda berhasil dibuat. Silakan cek kotak masuk/spam email Anda untuk memverifikasi akun sebelum login.';
+          }
           if (addToast) {
-            addToast('Pendaftaran Berhasil', 'Akun Anda berhasil dibuat. Silakan login.', 'success');
+            addToast('Pendaftaran Berhasil', fallbackMsg, 'success');
           }
           setView('login');
         }
       }
     } catch (err: any) {
       if (addToast) {
-        addToast('Gagal', err.message || 'Terjadi kesalahan saat memproses permintaan.', 'error');
+        let errorMsg = err.message || 'Terjadi kesalahan saat memproses permintaan.';
+        if (errorMsg.toLowerCase().includes('invalid login credentials')) {
+          errorMsg = 'Email atau kata sandi yang Anda masukkan salah.';
+        } else if (errorMsg.toLowerCase().includes('email not confirmed')) {
+          errorMsg = 'Email belum diverifikasi. Silakan cek kotak masuk/spam email Anda untuk memverifikasi akun.';
+        } else if (errorMsg.toLowerCase().includes('user already registered')) {
+          errorMsg = 'Email ini sudah terdaftar. Silakan langsung login.';
+        }
+        addToast('Gagal', errorMsg, 'error');
       }
     } finally {
       setIsLoggingInEmail(false);
