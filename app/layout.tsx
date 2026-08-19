@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import { LanguageProvider } from '@/components/providers/language-provider';
+import { CartProvider } from '@/components/providers/cart-provider';
+import { CartSheet } from '@/components/CartSheet';
+
 export default function RootLayout({
   children,
 }: {
@@ -25,21 +30,11 @@ export default function RootLayout({
   return (
     <html lang="id" className={plusJakartaSans.variable} suppressHydrationWarning>
       <head>
-        {/* Theme initialization script — runs BEFORE paint to prevent flash */}
+        {/* Remove extension-injected attributes before React hydration to prevent mismatch */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch(e) {}
-
-                // Remove extension-injected attributes before React hydration
                 try {
                   var observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(m) {
@@ -77,7 +72,14 @@ export default function RootLayout({
         className="bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-amber-300 selection:text-slate-900 font-sans min-h-screen flex flex-col"
         suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <LanguageProvider>
+            <CartProvider>
+              {children}
+              <CartSheet />
+            </CartProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

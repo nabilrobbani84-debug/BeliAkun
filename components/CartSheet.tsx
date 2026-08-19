@@ -1,31 +1,26 @@
+'use client';
+
 import React, { useState } from 'react';
 import { ShoppingBag, Plus, Minus, Trash2, ArrowRight, Tag, ShieldCheck, Check } from 'lucide-react';
-import { CartItem } from '@/types/store';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/components/providers/cart-provider';
 import { Sheet, SheetHeader, SheetTitle, SheetDescription, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Empty } from '@/components/beliakun-ui/empty';
 
-interface CartSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
-  cartItems: CartItem[];
-  onUpdateQuantity: (id: string, newQty: number) => void;
-  onRemoveItem: (id: string) => void;
-  onClearCart: () => void;
-  onCheckout: (appliedDiscount: number, couponCode: string) => void;
-}
+export function CartSheet() {
+  const router = useRouter();
+  const { 
+    isCartOpen, 
+    setIsCartOpen, 
+    cartItems, 
+    updateQuantity, 
+    removeFromCart, 
+    clearCart 
+  } = useCart();
 
-export function CartSheet({
-  isOpen,
-  onClose,
-  cartItems,
-  onUpdateQuantity,
-  onRemoveItem,
-  onClearCart,
-  onCheckout,
-}: CartSheetProps) {
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponSuccessMsg, setCouponSuccessMsg] = useState('');
@@ -61,8 +56,8 @@ export function CartSheet({
   const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} side="right">
-      <SheetHeader onClose={onClose}>
+    <Sheet isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} side="right">
+      <SheetHeader onClose={() => setIsCartOpen(false)}>
         <div className="flex items-center gap-2.5 sm:gap-3">
           <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-500 text-white border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] shrink-0">
             <ShoppingBag className="w-5 h-5" />
@@ -79,14 +74,14 @@ export function CartSheet({
           <Empty
             variant="cart"
             actionLabel="Mulai Pilih Produk"
-            onAction={onClose}
+            onAction={() => setIsCartOpen(false)}
           />
         ) : (
           <>
             <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]/20">
               <span className="text-xs font-bold text-[var(--muted-foreground)] uppercase tracking-wider">Daftar Produk</span>
               <button
-                onClick={onClearCart}
+                onClick={clearCart}
                 className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-800 flex items-center gap-1 min-h-[32px] cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Kosongkan
@@ -120,7 +115,7 @@ export function CartSheet({
                       {/* Qty controller */}
                       <div className="flex items-center gap-1 bg-[var(--muted)] border-2 border-[var(--border)] rounded-xl p-0.5">
                         <button
-                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, -1)}
                           className="w-7 h-7 rounded-lg bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] font-bold border border-[var(--border)] flex items-center justify-center text-xs touch-target cursor-pointer"
                           aria-label="Kurangi jumlah"
                         >
@@ -130,7 +125,7 @@ export function CartSheet({
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, 1)}
                           className="w-7 h-7 rounded-lg bg-[var(--foreground)] text-[var(--background)] font-bold flex items-center justify-center text-xs touch-target cursor-pointer"
                           aria-label="Tambah jumlah"
                         >
@@ -141,7 +136,7 @@ export function CartSheet({
                   </div>
 
                   <button
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => removeFromCart(item.id)}
                     className="absolute top-2.5 right-2.5 text-[var(--muted-foreground)] hover:text-rose-600 transition-colors p-1 touch-target cursor-pointer"
                     aria-label="Hapus dari keranjang"
                   >
@@ -217,7 +212,12 @@ export function CartSheet({
 
           <Button
             variant="primary"
-            onClick={() => onCheckout(discountAmount, couponCode)}
+            onClick={() => {
+              setIsCartOpen(false);
+              // Handle mock checkout routing. For real implementation, 
+              // we might want to pass discount or coupon via query string or context.
+              router.push('/checkout');
+            }}
             className="w-full py-3 text-xs sm:text-sm flex items-center justify-center gap-2 min-h-[44px]"
           >
             Lanjut Pembayaran <ArrowRight className="w-4 h-4" />

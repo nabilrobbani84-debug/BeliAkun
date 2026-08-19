@@ -15,8 +15,8 @@ import { ReviewCarousel } from '@/components/ReviewCarousel';
 import { FAQSection } from '@/components/FAQSection';
 import { NewsletterCTA } from '@/components/NewsletterCTA';
 import { StoreFooter } from '@/components/StoreFooter';
+import { useCart } from '@/components/providers/cart-provider';
 import { QuickViewModal } from '@/components/QuickViewModal';
-import { CartSheet } from '@/components/CartSheet';
 import { CheckoutModal } from '@/components/CheckoutModal';
 import { SearchDialog } from '@/components/SearchDialog';
 import { AuthModal } from '@/components/AuthModal';
@@ -35,18 +35,16 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   );
 
   // State Management
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [userName, setUserName] = useState<string>('');
   const [pendingCheckoutPkg, setPendingCheckoutPkg] = useState<ProductPackage | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
   // Toast Helpers
@@ -121,6 +119,8 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
     checkSession();
   }, []);
 
+  const { addToCart, cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
+
   // Cart Operations (Step 4: Direct to Checkout)
   const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
     if (!userName) {
@@ -130,42 +130,13 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
       return;
     }
     // Step 4: Add to cart and open CartSheet
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id && item.selectedPackage.id === pkg.id);
-      if (existing) {
-        return prev.map((item) => 
-          item.id === existing.id ? { ...item, quantity: item.quantity + quantity } : item
-        );
-      }
-      return [...prev, {
-        id: `${product.id}-${pkg.id}-${Date.now()}`,
-        product,
-        selectedPackage: pkg,
-        quantity
-      }];
+    addToCart({
+      id: `${product.id}-${pkg.id}`,
+      product,
+      selectedPackage: pkg,
+      quantity
     });
     addToast('Ditambahkan ke Keranjang', `${pkg.name} berhasil ditambahkan.`, 'success');
-    setIsCartOpen(true);
-  };
-
-  const handleUpdateQuantity = (id: string, newQty: number) => {
-    if (newQty <= 0) {
-      handleRemoveFromCart(id);
-      return;
-    }
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: newQty } : item))
-    );
-  };
-
-  const handleRemoveFromCart = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-    addToast('Item Dihapus', 'Produk dikeluarkan dari keranjang.', 'info');
-  };
-
-  const handleClearCart = () => {
-    setCartItems([]);
-    addToast('Keranjang Dikosongkan', 'Seluruh item telah dikeluarkan.', 'info');
   };
 
   // Checkout Handler
@@ -176,7 +147,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   };
 
   const handleSuccessOrder = () => {
-    setCartItems([]);
+    clearCart();
     setIsCheckoutOpen(false);
     addToast('Pembayaran Sukses!', 'Detail akun sedang dikirimkan via WhatsApp.', 'success');
   };
@@ -215,13 +186,9 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
 
       {/* 2. Header & Sticky Navigation */}
       <StoreHeader
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenAuth={(mode) => setIsAuthOpen(true)}
         userName={userName}
         onNavigateSection={handleNavigateSection}
-        isDarkMode={isDarkMode}
-        onToggleTheme={() => setIsDarkMode(!isDarkMode)}
-        onOpenCart={() => setIsCartOpen(true)}
-        cartItemCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
       />
 
       {/* Main Storefront Body Content */}
