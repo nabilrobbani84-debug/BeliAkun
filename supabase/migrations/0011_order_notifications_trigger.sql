@@ -3,8 +3,8 @@
 CREATE OR REPLACE FUNCTION notify_order_created()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Hanya buat notifikasi jika user_id ada (bukan guest)
-  IF NEW.user_id IS NOT NULL THEN
+  -- Hanya buat notifikasi jika customer_id ada (bukan guest)
+  IF NEW.customer_id IS NOT NULL THEN
     INSERT INTO public.notifications (
       user_id,
       title,
@@ -12,7 +12,7 @@ BEGIN
       type,
       is_read
     ) VALUES (
-      NEW.user_id,
+      NEW.customer_id,
       'Pesanan Dibuat',
       'Pesanan #' || NEW.order_number || ' berhasil dibuat. Silakan lakukan pembayaran.',
       'info',
@@ -38,7 +38,7 @@ CREATE OR REPLACE FUNCTION notify_order_paid()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Cek apakah status berubah menjadi paid
-  IF NEW.status = 'paid' AND OLD.status != 'paid' AND NEW.user_id IS NOT NULL THEN
+  IF NEW.status = 'paid' AND OLD.status != 'paid' AND NEW.customer_id IS NOT NULL THEN
     INSERT INTO public.notifications (
       user_id,
       title,
@@ -46,7 +46,7 @@ BEGIN
       type,
       is_read
     ) VALUES (
-      NEW.user_id,
+      NEW.customer_id,
       'Pembayaran Berhasil',
       'Pembayaran untuk pesanan #' || NEW.order_number || ' telah diterima. Pesanan sedang diproses.',
       'order_success',
