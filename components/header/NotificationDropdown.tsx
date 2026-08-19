@@ -9,9 +9,10 @@ import { useLanguage } from '@/components/providers/language-provider';
 
 interface NotificationDropdownProps {
   userName?: string;
+  onOpenAuth?: (mode: 'login' | 'register') => void;
 }
 
-export function NotificationDropdown({ userName }: NotificationDropdownProps) {
+export function NotificationDropdown({ userName, onOpenAuth }: NotificationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -109,6 +110,10 @@ export function NotificationDropdown({ userName }: NotificationDropdownProps) {
   };
 
   const handleToggle = () => {
+    if (!userName && onOpenAuth) {
+      onOpenAuth('login');
+      return;
+    }
     setIsOpen(!isOpen);
   };
 

@@ -57,45 +57,11 @@ export function StoreHeader({
           <LanguageDropdown />
           <CartButton />
           
-          {/* Fitur Riwayat Pesanan: works for both guest and logged in */}
+          {/* Fitur Riwayat Pesanan: always visible */}
           <OrderButton userName={userName} onOpenAuth={onOpenAuth} />
 
-          {userName ? (
-            <>
-              {/* Fitur Notifikasi: safe for logged in */}
-              <NotificationDropdown userName={userName} />
-
-              <div
-                onClick={() => onOpenAuth('login')}
-                className="cartoon-card px-3 py-1.5 bg-blue-100 dark:bg-blue-950/60 border-[var(--border)] text-blue-950 dark:text-blue-200 flex items-center gap-2 cursor-pointer hover:bg-blue-200 transition-colors touch-target min-h-[40px]"
-              >
-                <Avatar fallback={userName} size="xs" />
-                <span className="font-extrabold text-xs hidden sm:inline max-w-[120px] truncate">
-                  {userName}
-                </span>
-              </div>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => onOpenAuth('login')}
-                className="touch-target min-h-[38px] sm:min-h-[40px] font-extrabold px-2.5 sm:px-3.5 text-xs"
-              >
-                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span>{t.login}</span>
-              </Button>
-
-              <Button
-                variant="cartoon"
-                size="sm"
-                onClick={() => onOpenAuth('register')}
-                className="touch-target min-h-[38px] sm:min-h-[40px] font-extrabold px-2.5 sm:px-3.5 text-xs"
-              >
-                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span>{t.register}</span>
-              </Button>
-            </>
-          )}
+          {/* Fitur Notifikasi: always visible, handled internally for guests */}
+          <NotificationDropdown userName={userName} onOpenAuth={onOpenAuth} />
         </div>
       </PageContainer>
     </header>
