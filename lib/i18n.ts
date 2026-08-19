@@ -13,6 +13,11 @@ export const dictionaries = {
     markAllRead: 'Tandai semua telah dibaca',
     themeLight: 'Beralih ke Light Mode',
     themeDark: 'Beralih ke Dark Mode',
+    popularProducts: 'Produk Paling Dicari',
+    allCategories: 'Semua Kategori',
+    heroTitle: 'Akun Premium Fast Process',
+    heroSubtitle: 'Beli akun premium instan, aman, dan bergaransi',
+    flashSale: 'Promo Terbatas',
   },
   en: {
     cartEmpty: 'Your cart is still empty.',
@@ -26,6 +31,11 @@ export const dictionaries = {
     markAllRead: 'Mark all as read',
     themeLight: 'Switch to Light Mode',
     themeDark: 'Switch to Dark Mode',
+    popularProducts: 'Most Popular Products',
+    allCategories: 'All Categories',
+    heroTitle: 'Premium Accounts Fast Process',
+    heroSubtitle: 'Buy premium accounts instantly, securely, and with warranty',
+    flashSale: 'Limited Time Promo',
   }
 };
 

@@ -183,4 +183,77 @@ export interface Notification {
   updated_at: string;
 }
 
+export type PaymentProvider = 'klikqris';
+export type PaymentEventSource = 'create' | 'webhook' | 'status_sync' | 'admin_sync' | 'system';
+export type EventProcessingStatus = 'received' | 'processed' | 'ignored' | 'rejected' | 'failed';
+export type ExtendedPaymentStatus = PaymentStatus | 'initializing' | 'unknown' | 'review';
+
+export interface Payment {
+  id: string;
+  order_id: string;
+  provider: PaymentProvider;
+  provider_mode: string;
+  provider_order_id: string | null;
+  status: ExtendedPaymentStatus;
+  currency: string;
+  amount_requested: number;
+  amount_payable: number;
+  unique_amount: number;
+  provider_signature_hash: string | null;
+  qris_url: string;
+  direct_url: string | null;
+  provider_expires_at: string | null;
+  provider_paid_at: string | null;
+  last_synced_at: string | null;
+  create_attempts: number;
+  last_error_code: string | null;
+  metadata: any | null;
+}
+
+export interface PaymentEvent {
+  id: string;
+  payment_id: string;
+  order_id: string;
+  provider: PaymentProvider;
+  provider_order_id: string | null;
+  source: PaymentEventSource;
+  event_type: string;
+  event_fingerprint: string;
+  processing_status: EventProcessingStatus;
+  provider_status: string | null;
+  sanitized_payload: any | null;
+  error_code: string | null;
+  received_at: string;
+  processed_at: string | null;
+  created_at: string;
+}
+
+export type VoucherStatus = 'active' | 'inactive' | 'expired';
+export type DiscountType = 'percentage' | 'fixed';
+
+export interface Voucher {
+  id: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  min_transaction: number;
+  max_discount: number | null;
+  usage_limit: number | null;
+  current_usage: number;
+  status: VoucherStatus;
+  valid_from: string;
+  valid_until: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VoucherUsage {
+  id: string;
+  voucher_id: string;
+  order_id: string;
+  customer_id: string | null;
+  discount_applied: number;
+  created_at: string;
+}
+
 export type Database = any;

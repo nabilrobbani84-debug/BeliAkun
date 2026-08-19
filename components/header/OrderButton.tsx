@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 interface OrderButtonProps {
   userName?: string;
@@ -10,9 +11,11 @@ interface OrderButtonProps {
 }
 
 export function OrderButton({ userName, onOpenAuth }: OrderButtonProps) {
+  const router = useRouter();
+
   const handleClick = () => {
     if (userName) {
-      window.location.href = '/riwayat-pesanan';
+      router.push('/riwayat-pesanan');
     } else {
       // Guest behavior: prompt login
       onOpenAuth('login');

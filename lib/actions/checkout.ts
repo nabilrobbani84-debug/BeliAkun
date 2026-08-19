@@ -1,11 +1,9 @@
 'use server';
 
 import { env } from '@/lib/env';
-import { createGuestOrder } from '@/lib/data/orders';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateOrderAccessToken, hashOrderAccessToken } from '@/lib/security/order-access-token';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 export interface CheckoutResult {
   success: boolean;
@@ -13,12 +11,13 @@ export interface CheckoutResult {
   orderNumber?: string;
 }
 
-export async function submitGuestCheckout(
-  variantId: string,
+export async function submitMultiCartCheckout(
+  items: { variant_id: string; quantity: number }[],
   recipientEmail: string,
   confirmEmail: string,
   idempotencyKey: string,
-  acceptedTerms: boolean
+  acceptedTerms: boolean,
+  voucherCode?: string
 ): Promise<CheckoutResult> {
   try {
     // 1. Feature flag check
@@ -27,8 +26,8 @@ export async function submitGuestCheckout(
     }
 
     // 2. Input validation
-    if (!variantId) {
-      return { success: false, error: 'Produk/Paket tidak valid.' };
+    if (!items || items.length === 0) {
+      return { success: false, error: 'Keranjang belanja kosong.' };
     }
     if (!recipientEmail || !confirmEmail) {
       return { success: false, error: 'Email harus diisi.' };
@@ -49,57 +48,69 @@ export async function submitGuestCheckout(
       return { success: false, error: 'Anda harus menyetujui syarat & ketentuan.' };
     }
 
-    // 3. Create Order via Data Access Layer
-    const orderResult = await createGuestOrder(
-      variantId,
-      emailTrimmed,
-      idempotencyKey,
-      env.ORDER_RESERVATION_MINUTES
-    );
+    // 3. Create Order via RPC (bypass RLS for guest order creation)
+    const adminClient = createAdminClient();
     
-    if (!orderResult.success || !orderResult.order_id) {
+    // Attempt to get current user if logged in
+    const { data: { user } } = await adminClient.auth.getUser();
+    
+    const payload = {
+      items,
+      customer_id: user?.id || null,
+      recipient_email: emailTrimmed,
+      idempotency_key: idempotencyKey,
+      reservation_minutes: env.ORDER_RESERVATION_MINUTES,
+      voucher_code: voucherCode || null
+    };
+
+    const { data: rpcData, error: rpcError } = await adminClient.rpc('create_multi_item_order', {
+      p_payload: payload
+    });
+
+    if (rpcError) {
+      console.error('RPC Error:', rpcError);
+      throw new Error(rpcError.message);
+    }
+
+    if (!rpcData || !rpcData.success) {
       return { success: false, error: 'Gagal membuat pesanan. Silakan coba kembali.' };
     }
 
-    const orderId = orderResult.order_id;
-    const orderNumber = orderResult.order_number;
+    const orderId = rpcData.order_id;
+    const orderNumber = rpcData.order_number;
+    const isExisting = rpcData.is_existing;
 
-    // 4. Generate Order Access Token
-    const rawToken = generateOrderAccessToken();
-    const tokenHash = await hashOrderAccessToken(rawToken);
-    
-    const tokenTtlDays = env.ORDER_ACCESS_TOKEN_TTL_DAYS || 90;
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + tokenTtlDays);
+    // 4. Generate Order Access Token (only if not existing order idempotency hit)
+    if (!isExisting) {
+      const rawToken = generateOrderAccessToken();
+      const tokenHash = await hashOrderAccessToken(rawToken);
+      
+      const tokenTtlDays = env.ORDER_ACCESS_TOKEN_TTL_DAYS || 90;
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + tokenTtlDays);
 
-    // 5. Save Token Hash to database (using admin client to bypass RLS)
-    const adminClient = createAdminClient();
-    const { error: tokenError } = await adminClient.from('order_access_tokens').insert({
-      order_id: orderId,
-      token_hash: tokenHash,
-      expires_at: expiresAt.toISOString()
-    });
-    
-    if (tokenError) {
-      // In a real scenario we might want to log this or cancel the order.
-      // But let's fail gracefully and ask user to retry, because they won't be able to access the order without cookie.
-      return { success: false, error: 'Gagal menghasilkan token akses pesanan. Silakan coba kembali.' };
+      // 5. Save Token Hash to database
+      const { error: tokenError } = await adminClient.from('order_access_tokens').insert({
+        order_id: orderId,
+        token_hash: tokenHash,
+        expires_at: expiresAt.toISOString()
+      });
+      
+      if (tokenError) {
+        return { success: false, error: 'Gagal menghasilkan token akses pesanan. Silakan coba kembali.' };
+      }
+
+      // 6. Set HttpOnly Cookie for guest access
+      const cookieStore = await cookies();
+      cookieStore.set(`beliakun_guest_order_${orderNumber}`, rawToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: `/pesanan/${orderNumber}`,
+        maxAge: tokenTtlDays * 24 * 60 * 60 // seconds
+      });
     }
-
-    // 6. Set HttpOnly Cookie for guest access
-    const cookieStore = await cookies();
-    // Save in format: orderNumber:rawToken (this format helps client to know which order it can access)
-    // Actually, storing just rawToken is better, the server checks the hash.
-    // If we want multiple orders, we might need a JSON array. But for Step 4, let's keep it simple.
-    cookieStore.set(`beliakun_guest_order_${orderNumber}`, rawToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: `/pesanan/${orderNumber}`,
-      maxAge: tokenTtlDays * 24 * 60 * 60 // seconds
-    });
     
-    // We will do redirect on client side so we return success true
     return { success: true, orderNumber };
     
   } catch (error: any) {
@@ -109,9 +120,9 @@ export async function submitGuestCheckout(
     let errorMessage = 'Pesanan belum dapat dibuat. Silakan coba kembali beberapa saat lagi.';
     
     if (error.message?.includes('Out of stock')) {
-      errorMessage = 'Stok untuk paket ini baru saja habis. Silakan pilih paket lain atau coba kembali nanti.';
+      errorMessage = 'Sebagian stok paket baru saja habis. Silakan periksa kembali keranjang Anda.';
     } else if (error.message?.includes('Variant not found')) {
-      errorMessage = 'Paket ini sudah tidak tersedia.';
+      errorMessage = 'Sebagian paket sudah tidak tersedia.';
     }
     
     return { success: false, error: errorMessage };

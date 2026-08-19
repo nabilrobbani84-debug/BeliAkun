@@ -13,11 +13,13 @@ import { HowItWorks } from '@/components/HowItWorks';
 import { TrustSection } from '@/components/TrustSection';
 import { ReviewCarousel } from '@/components/ReviewCarousel';
 import { FAQSection } from '@/components/FAQSection';
+import { Empty } from '@/components/beliakun-ui/empty';
+import { useLanguage } from '@/components/providers/language-provider';
 import { NewsletterCTA } from '@/components/NewsletterCTA';
 import { StoreFooter } from '@/components/StoreFooter';
 import { useCart } from '@/components/providers/cart-provider';
 import { QuickViewModal } from '@/components/QuickViewModal';
-import { CheckoutModal } from '@/components/CheckoutModal';
+
 import { SearchDialog } from '@/components/SearchDialog';
 import { AuthModal } from '@/components/AuthModal';
 import { ToastContainer, ToastMessage } from '@/components/ToastNotification';
@@ -46,6 +48,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
   const [pendingCheckoutPkg, setPendingCheckoutPkg] = useState<ProductPackage | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const router = useRouter();
+  const { t } = useLanguage();
 
   // Toast Helpers
   const addToast = (title: string, message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -123,12 +126,6 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
 
   // Cart Operations (Step 4: Direct to Checkout)
   const handleAddToCart = (product: Product, pkg: ProductPackage, quantity: number = 1) => {
-    if (!userName) {
-      addToast('Akses Ditolak', 'Silakan masuk ke akun Anda terlebih dahulu untuk melakukan pembelian.', 'info');
-      setPendingCheckoutPkg(pkg);
-      setIsAuthOpen(true);
-      return;
-    }
     // Step 4: Add to cart and open CartSheet
     addToCart({
       id: `${product.id}-${pkg.id}`,
@@ -223,7 +220,7 @@ export function Storefront({ initialProducts, initialCategories }: { initialProd
         {/* Dynamic Category Products Grid Anchor */}
         <div id="category-products-anchor">
           <ProductGrid
-            title={selectedCategoryId === 'all' ? 'Produk Paling Dicari' : `Kategori: ${selectedCategoryId.toUpperCase()}`}
+            title={selectedCategoryId === 'all' ? t.popularProducts : `Kategori: ${selectedCategoryId.toUpperCase()}`}
             subtitle="Klik 'Detail' untuk memilih paket atau '+ Keranjang' untuk order instan."
             products={categoryProducts}
             onQuickView={(prod) => setQuickViewProduct(prod)}

@@ -95,43 +95,48 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 <Package className="w-5 h-5 text-blue-600" /> Rincian Produk
               </h2>
             </div>
-            <div className="p-5">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-1 space-y-3 text-sm">
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Nama Produk</p>
-                    <p className="font-bold text-slate-900 text-base">{item.product_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Paket / Varian</p>
-                    <p className="font-bold text-blue-600">{item.variant_name}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-slate-500 font-semibold mb-1">Durasi</p>
-                      <p className="font-bold text-slate-900">{item.duration_label || '-'}</p>
+            
+            <div className="divide-y-2 divide-slate-100">
+              {order.order_items.map((item: any) => (
+                <div key={item.id} className="p-5">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 space-y-3 text-sm">
+                      <div>
+                        <p className="text-slate-500 font-semibold mb-1">Nama Produk</p>
+                        <p className="font-bold text-slate-900 text-base">{item.product_name}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 font-semibold mb-1">Paket / Varian</p>
+                        <p className="font-bold text-blue-600">{item.variant_name}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-slate-500 font-semibold mb-1">Durasi</p>
+                          <p className="font-bold text-slate-900">{item.duration_label || '-'}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500 font-semibold mb-1">Tipe Akun</p>
+                          <p className="font-bold text-slate-900">{item.account_type || '-'}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-slate-500 font-semibold mb-1">Tipe Akun</p>
-                      <p className="font-bold text-slate-900">{item.account_type || '-'}</p>
+                    <div className="flex-1 space-y-3 text-sm border-t-2 border-slate-100 pt-4 md:border-t-0 md:pt-0 md:border-l-2 md:pl-6">
+                      <div>
+                        <p className="text-slate-500 font-semibold mb-1">Harga Satuan</p>
+                        <p className="font-bold text-slate-900">Rp {item.unit_price.toLocaleString('id-ID')}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 font-semibold mb-1">Kuantitas</p>
+                        <p className="font-bold text-slate-900">{item.quantity}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 font-semibold mb-1">Tipe Stok</p>
+                        <p className="font-bold text-slate-900 capitalize">{item.stock_type || '-'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 space-y-3 text-sm border-t-2 border-slate-100 pt-4 md:border-t-0 md:pt-0 md:border-l-2 md:pl-6">
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Harga Satuan</p>
-                    <p className="font-bold text-slate-900">Rp {item.unit_price.toLocaleString('id-ID')}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Kuantitas</p>
-                    <p className="font-bold text-slate-900">{item.quantity}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Tipe Stok</p>
-                    <p className="font-bold text-slate-900 capitalize">{item.stock_type || '-'}</p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 

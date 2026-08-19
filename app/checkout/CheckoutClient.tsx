@@ -1,30 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { submitGuestCheckout } from '@/lib/actions/checkout';
-import { Check, ShieldCheck, Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import { submitMultiCartCheckout } from '@/lib/actions/checkout';
+import { Check, ShieldCheck, Mail, ArrowLeft, Loader2, Trash2 } from 'lucide-react';
+import { useCart } from '@/components/providers/cart-provider';
 
 interface CheckoutClientProps {
-  variant: any;
-  product: any;
   checkoutEnabled: boolean;
   userEmail?: string;
 }
 
-export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }: CheckoutClientProps) {
+export function CheckoutClient({ checkoutEnabled, userEmail }: CheckoutClientProps) {
   const router = useRouter();
+  const { cartItems, removeFromCart, clearCart } = useCart();
   const [email, setEmail] = useState(userEmail || '');
   const [confirmEmail, setConfirmEmail] = useState(userEmail || '');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  
+  // Need mounted check for cartItems from localStorage
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  // Idempotency key per page load
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
-  const isOutOfStock = variant.stock_type === 'limited' && !variant.is_available;
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.selectedPackage.price * item.quantity), 0);
+  const discountTotal = 0; // Voucher logic could go here later
+  const grandTotal = subtotal - discountTotal;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +39,8 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
       setError('Checkout sedang dipersiapkan. Silakan kembali lagi nanti.');
       return;
     }
-    if (isOutOfStock) {
-      setError('Stok paket ini baru saja habis. Silakan pilih paket lain.');
+    if (cartItems.length === 0) {
+      setError('Keranjang belanja kosong.');
       return;
     }
     if (email !== confirmEmail) {
@@ -48,9 +55,14 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
     setIsSubmitting(true);
     setError('');
 
+    const itemsPayload = cartItems.map(item => ({
+      variant_id: item.selectedPackage.id,
+      quantity: item.quantity
+    }));
+
     try {
-      const result = await submitGuestCheckout(
-        variant.id,
+      const result = await submitMultiCartCheckout(
+        itemsPayload,
         email,
         confirmEmail,
         idempotencyKey,
@@ -58,6 +70,7 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
       );
 
       if (result.success && result.orderNumber) {
+        clearCart();
         router.push(`/pesanan/${result.orderNumber}`);
       } else {
         setError(result.error || 'Terjadi kesalahan. Silakan coba kembali.');
@@ -68,6 +81,20 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
       setIsSubmitting(false);
     }
   };
+
+  if (!mounted) return null;
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] text-slate-900 flex flex-col items-center justify-center p-4">
+        <h2 className="text-2xl font-black mb-4">Keranjang Kosong</h2>
+        <p className="text-slate-600 mb-6 text-center">Anda belum menambahkan produk apapun ke keranjang.</p>
+        <Button onClick={() => router.push('/')} variant="primary" className="h-12 px-8">
+          Kembali Berbelanja
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-slate-900 pb-16">
@@ -91,12 +118,6 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
           {!checkoutEnabled && (
             <div className="bg-amber-100 border border-amber-300 text-amber-900 p-4 rounded-xl font-medium">
               Checkout sedang dipersiapkan. Silakan kembali lagi setelah metode pembayaran tersedia.
-            </div>
-          )}
-
-          {isOutOfStock && checkoutEnabled && (
-            <div className="bg-red-100 border border-red-300 text-red-900 p-4 rounded-xl font-medium">
-              Stok untuk paket ini sedang kosong. Silakan pilih paket lain.
             </div>
           )}
 
@@ -166,46 +187,56 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
         {/* Kolom Kanan: Ringkasan */}
         <div className="md:col-span-5">
           <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden sticky top-20">
-            <div className="bg-slate-50 p-5 border-b-2 border-slate-100">
+            <div className="bg-slate-50 p-5 border-b-2 border-slate-100 flex justify-between items-center">
               <h3 className="font-black text-lg">Ringkasan Pesanan</h3>
+              <span className="text-sm font-bold text-blue-600">{cartItems.length} Item</span>
             </div>
             
             <div className="p-5 space-y-4">
-              <div className="flex gap-4">
-                <div className={`w-16 h-16 rounded-xl shrink-0 flex items-center justify-center border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] text-white ${product.logoBg}`}>
-                  <span className="font-bold text-xs">{product.name.substring(0, 2).toUpperCase()}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-extrabold text-slate-900 truncate">{product.name}</h4>
-                  <p className="text-blue-600 font-bold text-sm">{variant.name}</p>
-                  <p className="text-xs font-semibold text-slate-500 mt-1 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> 
-                    {variant.warranty_enabled ? `Garansi ${variant.warranty_duration} ${variant.warranty_unit}` : 'Tanpa Garansi'}
-                  </p>
-                </div>
+              <div className="max-h-[300px] overflow-y-auto pr-2 space-y-4 scrollbar-thin">
+                {cartItems.map(item => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className={`w-14 h-14 rounded-xl shrink-0 flex items-center justify-center border-2 border-slate-900 shadow-[2px_2px_0px_0px_#000] text-white ${item.product.logoBg}`}>
+                      <span className="font-bold text-xs">{item.product.name.substring(0, 2).toUpperCase()}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-extrabold text-slate-900 text-sm truncate">{item.product.name}</h4>
+                      <p className="text-blue-600 font-bold text-xs mt-0.5">{item.selectedPackage.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs font-semibold text-slate-500">
+                          {item.quantity}x @ Rp {item.selectedPackage.price.toLocaleString('id-ID')}
+                        </span>
+                        <button 
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded"
+                          title="Hapus"
+                          disabled={isSubmitting}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <hr className="border-slate-100" />
 
               <div className="space-y-2 text-sm font-medium text-slate-600">
                 <div className="flex justify-between">
-                  <span>Tipe Akun</span>
-                  <span className="text-slate-900 font-bold">{variant.account_type || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Durasi</span>
-                  <span className="text-slate-900 font-bold">{variant.duration_label || '-'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pengiriman</span>
-                  <span className="text-slate-900 font-bold">{variant.delivery_method === 'instant' ? 'Instan' : 'Manual'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Harga</span>
+                  <span>Subtotal</span>
                   <span className="text-slate-900 font-bold">
-                    Rp {variant.price.toLocaleString('id-ID')}
+                    Rp {subtotal.toLocaleString('id-ID')}
                   </span>
                 </div>
+                {discountTotal > 0 && (
+                  <div className="flex justify-between text-emerald-600">
+                    <span>Diskon</span>
+                    <span className="font-bold">
+                      -Rp {discountTotal.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <hr className="border-slate-100" />
@@ -213,14 +244,14 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
               <div className="flex justify-between items-center py-2">
                 <span className="font-black text-slate-900">Total Pembayaran</span>
                 <span className="font-black text-2xl text-blue-600">
-                  Rp {variant.price.toLocaleString('id-ID')}
+                  Rp {grandTotal.toLocaleString('id-ID')}
                 </span>
               </div>
 
               <Button
                 type="submit"
                 form="checkout-form"
-                disabled={isSubmitting || !checkoutEnabled || isOutOfStock}
+                disabled={isSubmitting || !checkoutEnabled}
                 className="w-full h-14 rounded-xl font-black text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-[0_4px_14px_0_rgb(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
@@ -231,7 +262,7 @@ export function CheckoutClient({ variant, product, checkoutEnabled, userEmail }:
                 ) : (
                   <>
                     <Check className="w-5 h-5" /> 
-                    <span>Beli Sekarang</span>
+                    <span>Bayar Sekarang</span>
                   </>
                 )}
               </Button>
