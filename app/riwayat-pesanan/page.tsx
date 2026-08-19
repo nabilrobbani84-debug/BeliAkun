@@ -17,11 +17,10 @@ export default async function RiwayatPesananPage() {
     redirect('/?auth_error=Silakan+login+terlebih+dahulu');
   }
 
-  // To be safe, let's use admin client to fetch orders for the user's email since guest checkout might not link to auth.users.id
-  const { createAdminClient } = await import('@/lib/supabase/admin');
-  const adminClient = createAdminClient();
+  // Use regular client, requires RLS policy for users to view their own orders
+  // Alternatively, if RLS is not set yet, we must fallback or add the RLS policy.
   
-  const { data: orders, error } = await adminClient
+  const { data: orders, error } = await supabase
     .from('orders')
     .select(`
       *,
